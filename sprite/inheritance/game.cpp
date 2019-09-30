@@ -67,8 +67,8 @@ void createData(CAutoSprite **autoSprite)
 	if (x < 0)x = 0;
 	int y = rand() % winHeight - autoHeight;
 	if (y < 0)y = 0;
-	int dx = rand() % 3 + 1;
-	int dy = rand() % 3 + 1;
+	int dx = rand() % 5 + 1;
+	int dy = rand() % 5 + 1;
 	autosprite[nowNum++] = new CAutoSprite(x, y, autoWidth, autoHeight, dx, dy, &img, winRect);
 
 }
@@ -78,8 +78,8 @@ void createData(CUsrSprite **usr)
 	if (x < 0)x = 0;
 	int y = rand() % winHeight - autoHeight;
 	if (y < 0)y = 0;
-	int dx = rand() % 3 + 1;
-	int dy = rand() % 3 + 1;
+	int dx = 5;
+	int dy = 5;
 	*usr = new CUsrSprite(x, y, usrWidth, usrHeight, dx, dy, &imgUsr, winRect);
 
 }
@@ -97,20 +97,7 @@ void paint()
 	}
 	if (usr)
 	{
-		switch (usr->getScore()/4)
-		{
-		case 0:
-		case 1:usr->drawSprite();
-			break;
-		case 2:
-			usr->drawSprite(1.5*usrWidth, 1.5*usrHeight);
-			break;
-		case 3:
-		default:
-			usr->drawSprite(2*usrWidth, 2*usrHeight);
-			break;
-			
-		}
+		usr->drawSprite();
 		
 		char txt[10];
 		sprintf_s(txt, "%d", usr->getScore());

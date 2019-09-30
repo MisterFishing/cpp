@@ -30,8 +30,8 @@ void CAvoidSprite::move(rect ur)
 		if (y < ur.y) dy = -abs(dy);
 		else dy=abs(dy);
 
-		x += 2*dx;
-		y += 2*dy;
+		x += 1.5*dx;
+		y += 1.5*dy;
 	}
 	else
 	{
@@ -52,6 +52,6 @@ bool CAvoidSprite::danger(rect ur)
 	int ux = ur.x + ur.width / 2;
 	int uy = ur.y + ur.height / 2;
 	float dist = sqrt((cx - ux)*(cx - ux) + (cy - uy)*(cy - uy));
-	if (dist < 200) return true;
+	if (dist < 150) return true;
 	else return false;
 }

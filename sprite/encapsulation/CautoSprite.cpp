@@ -40,9 +40,8 @@ void CautoSprite::move()
 {
 	x+=dx;
 	y+=dy;
-	if(x<=0 || x>= winWidth-width)dx*=-1;
-	if(y<=0 || y>=winHeight-height)dy*=-1;
-
+	if(x<0 || x> winWidth-width) dx*=-1;
+	if(y<0 || y>winHeight-height) dy*=-1;
 }
 void CautoSprite::drawScale(int w,int h)
 {

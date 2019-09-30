@@ -5,7 +5,7 @@
 #include<time.h>
 
 const int winWidth = 880, winHeight = 600,width=100,height=100;
-const int MAXNUM=10;
+const int MAXNUM=50;
 CautoSprite *autos[MAXNUM]={NULL};
 CusrSprite *usr=NULL;
 void timerEvent(int id);
@@ -21,7 +21,7 @@ int Setup()
 	y=rand()%winHeight;
 	if(x>winWidth-width)x=winWidth-width;
 	if(y>winHeight-height)y=winHeight-height;
-	dx=dy=3;
+	dx=dy=5;
 	usr=new CusrSprite("dog.jpg",x,y,dx,dy,width,height,winWidth,winHeight);
 	registerTimerEvent(timerEvent);
 	startTimer(0,500);
@@ -35,7 +35,7 @@ void timerEvent(int id)
 	switch(id)
 	{
 	case 0:
-		if(d>=MAXNUM)return;
+		if(d>=MAXNUM) return;
 		int x,y,dx,dy;
 		x=rand()%winWidth;
 		y=rand()%winHeight;
@@ -44,21 +44,17 @@ void timerEvent(int id)
 		dx=rand()%5+1;
 		dy=rand()%5+1;
 		autos[d]=new CautoSprite("cat.jpg",x,y,dx,dy,width,height,winWidth,winHeight);
-		if(autos[d])
-		{
-			++d;
+		if(autos[d]) 
+			d++;
 
-		}
 		break;
 	case 1:
 		for(int i=0;i<d;++i)
-		{
-			if(autos[i])
-			{
+			if(autos[i]) 
 				autos[i]->move();
-			}
-		}
+
 		paintSprites();
+
 		break;
 	}
 }

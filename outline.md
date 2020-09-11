@@ -428,3 +428,5 @@ g++ -g -O test.cpp -o test.exe
 用调试器检查是否内联成功。
 
 
+
+

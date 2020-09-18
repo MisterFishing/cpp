@@ -208,6 +208,12 @@ cout << number << " " << n << endl;
 
 用调试器验证引用就是别名。
 
+如何验证？
+
+```
+g++ -g test.cpp -o test.exe
+```
+
 ---
 
 ***补充：程序调试方法***
@@ -419,14 +425,268 @@ int main(){
     return 0;
 }
 ```
+
+用调试器检查是否内联成功。
+
+如何检查？
+
 编译优化选项：-O
 
 ```
 g++ -g -O test.cpp -o test.exe
 ```
 
-用调试器检查是否内联成功。
+# 函数重载
+
+在编译的过程中，编译器会把函数名在原先的基础上做一些改变。
 
 
+```
+int GetMax2(int x, int y)
+{
+    if(x>y)
+        return x;
+    else
+        return y;
+}
 
+int GetMax3(int x, int y, int z)
+{
+    int tmp1,tmp2;
+    tmp1=GetMax2(x,y);
+    tmp2=GetMax2(tmp1,z);
+    return tmp2;
+}
+
+int main()
+{
+    return 0;
+}
+```
+C编译器，修改后的函数名：
+
+```
+gcc test.c -o test.exe
+nm test.exe | find "GetMax"
+004015c0 T _GetMax2
+004015d5 T _GetMax3
+```
+
+C++编译器，修改后的函数名：
+
+```
+gcc test.cpp -o test.exe
+nm test.exe | find "GetMax"
+004015c0 T __Z7GetMax2ii
+004015d5 T __Z7GetMax3iii
+```
+
+C++编译器的修改方式，使得源代码中即使使用了两个完全相同的函数名，在编译的过程中也不会发生重名冲突。
+
+但至少需要满足以下两个要求之一：
+
+1. 参数个数不同
+1. 参数类型不同
+
+参数个数不同：
+
+```
+int GetMax(int x, int y)
+int GetMax(int x, int y, int z)
+```
+
+修改后的函数名：
+
+```
+nm test.exe | find "GetMax"
+0040170b t __GLOBAL__sub_I__Z6GetMaxii
+004015c0 T __Z6GetMaxii
+004015d5 T __Z6GetMaxiii
+```
+
+参数类型不同：
+
+```
+int GetMax(int x, int y)
+int GetMax(float x, float y)
+```
+
+修改后的函数名：
+
+```
+nm test.exe | find "GetMax"
+004015d5 T __Z6GetMaxff
+004015c0 T __Z6GetMaxii
+```
+
+两个以上的函数，具有相同的函数名，但是形参个数或者类型不同.在函数调用的时候，编译器会根据实参的类型及个数的最佳匹配来自动确定调用哪一个函数。
+
+用调试器验证调用了正确的函数。
+
+如何验证？
+
+```
+(gdb) b *0x004015c0
+Breakpoint 3 at 0x4015c0: file test.cpp, line 5.
+(gdb) b *0x004015d5
+Breakpoint 4 at 0x4015d5: file test.cpp, line 13.
+```
+
+# 带默认形参值的函数
+
+在定义函数时给出默认的形参值。调用函数时如果给出了实参值，则使用给出的实参值；如果未给出实参值，则使用默认的形参值。
+
+```
+int Register(int number, char const * name, int age=18, char const * country="China")
+{
+    cout << "Number: " << number << endl;
+    cout << "Name: " << name << endl;
+    cout << "Age: " << age << endl;
+    cout << "Country: " << country << endl << endl;
+    return 0;
+}
+
+int main()
+{
+    Register(1,"ZhangSan");
+    Register(2,"LiSi");
+    Register(3,"WangWu", 20);
+    Register(4,"Tom", 18, "England");
+    return 0;
+}
+```
+
+## 注意
+
+形参的顺序：无默认值在前，有默认值在后。
+
+函数重载的关系：本身不是函数重载，但 **“可能”** 会和重载的函数相互影响。
+
+当编译器在翻译某个函数调用时，如果不能确定该调用哪个函数，则会出现编译错误。如果能够确定该调用哪个函数，则不会出现编译错误。
+
+```
+int Register(int number, char const * name)
+{
+    cout << "Number: " << number << endl;
+    cout << "Name: " << name << endl;
+    cout << "Age: " << 18 << endl;
+    cout << "Country: " << "China" << endl << endl;
+    return 0;
+}
+
+int main()
+{
+    Register(1,"ZhangSan"); /* 不能确定 */
+    Register(2,"LiSi"); /* 不能确定 */
+    Register(3,"WangWu", 20); /* 能够确定 */
+    Register(4,"Tom", 18, "England"); /* 能够确定 */
+    return 0;
+}
+```
+
+# 动态内存分配和释放
+
+C语言的动态内存分配和释放使用malloc()和free()等函数，它们来自标准函数库。
+
+```
+#include <stdlib.h>
+
+int main()
+{
+    int * a;
+    a = malloc(sizeof(int));
+    free(a);
+    return 0;
+}
+```
+
+C++语言的动态内存分配和释放使用 **“运算符”** new和delete，它们是语言的组成部分。
+
+```
+int main()
+{
+    int * a;
+    a = new int;
+    delete a;
+    return 0;
+}
+```
+
+## 使用方法
+
+方法1：
+
+type *p; p=new type; delete p;
+
+```
+int main()
+{
+    int * a;
+    a = new int;
+    *a = 123;
+    cout << *a;
+    delete a;
+    return 0;
+}
+```
+方法2：
+
+type *p; p=new type(x); delete p;
+
+
+```
+int main()
+{
+    int * a;
+    a = new int(456);
+    cout << *a;
+    delete a;
+    return 0;
+}
+```
+
+方法3：
+
+type *p; p=new type[x]; delete []p;
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+    char * a;
+    a = new char[10];
+    strcpy(a,"hello");
+    cout << a;
+    delete []a;
+    return 0;
+}
+```
+
+动态分配和释放空间较大时，未delete或多次delete，都可能导致程序崩溃。
+
+```
+#include <iostream>
+using namespace std;
+
+void func(int i)
+{
+    char *p;
+    p=new char[1000000];
+    cout  << i << endl;
+    delete []p;
+}
+
+int main()
+{
+    for(int i=1; i<=4000; i++){
+        func(i);
+    }
+
+    cout << "OK" << endl;
+    return 0;
+}
+```
 

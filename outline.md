@@ -436,9 +436,17 @@ int main(){
 g++ -g -O test.cpp -o test.exe
 ```
 
+inline仅仅是对编译器的一个优化建议，是否采纳，还看编译器自己。
+
+即使不提这个建议，编译器也会在适当的时候进行优化。
+
+inline在编译优化技术不太成熟的时候，用得较多，现在用得越来越少。
+
 # 函数重载
 
 在编译的过程中，编译器会把函数名在原先的基础上做一些改变。
+
+C程序编译实例：
 
 
 ```
@@ -463,7 +471,7 @@ int main()
     return 0;
 }
 ```
-C编译器，修改后的函数名：
+修改后的函数名：
 
 ```
 gcc test.c -o test.exe
@@ -472,10 +480,36 @@ nm test.exe | find "GetMax"
 004015d5 T _GetMax3
 ```
 
-C++编译器，修改后的函数名：
+C++程序编译实例：
+
 
 ```
-gcc test.cpp -o test.exe
+int GetMax(int x, int y)
+{
+    if(x>y)
+        return x;
+    else
+        return y;
+}
+
+int GetMax(int x, int y, int z)
+{
+    int tmp1,tmp2;
+    tmp1=GetMax(x,y);
+    tmp2=GetMax(tmp1,z);
+    return tmp2;
+}
+
+int main()
+{
+    return 0;
+}
+```
+
+修改后的函数名：
+
+```
+g++ test.cpp -o test.exe
 nm test.exe | find "GetMax"
 004015c0 T __Z7GetMax2ii
 004015d5 T __Z7GetMax3iii
@@ -499,7 +533,6 @@ int GetMax(int x, int y, int z)
 
 ```
 nm test.exe | find "GetMax"
-0040170b t __GLOBAL__sub_I__Z6GetMaxii
 004015c0 T __Z6GetMaxii
 004015d5 T __Z6GetMaxiii
 ```
@@ -534,7 +567,7 @@ Breakpoint 4 at 0x4015d5: file test.cpp, line 13.
 
 # 带默认形参值的函数
 
-在定义函数时给出默认的形参值。调用函数时如果给出了实参值，则使用给出的实参值；如果未给出实参值，则使用默认的形参值。
+可以在定义函数时给出默认的形参值。调用函数时如果给出了实参值，则使用给出的实参值；如果未给出实参值，则使用默认的形参值。
 
 ```
 int Register(int number, char const * name, int age=18, char const * country="China")
@@ -558,13 +591,22 @@ int main()
 
 ## 注意
 
-形参的顺序：无默认值在前，有默认值在后。
+形参的顺序：无默认值的形参在前，有默认值的形参在后。
 
-函数重载的关系：本身不是函数重载，但 **“可能”** 会和重载的函数相互影响。
+与函数重载的关系：本身不是函数重载，但 **“可能”** 会和函数重载相互影响。
 
-当编译器在翻译某个函数调用时，如果不能确定该调用哪个函数，则会出现编译错误。如果能够确定该调用哪个函数，则不会出现编译错误。
+编译器处理函数调用时，如果不能确定该调用哪个函数，则会出现编译错误；如果能够确定该调用哪个函数，则不会出现编译错误。
 
 ```
+int Register(int number, char const * name, int age=18, char const * country="China")
+{
+    cout << "Number: " << number << endl;
+    cout << "Name: " << name << endl;
+    cout << "Age: " << age << endl;
+    cout << "Country: " << country << endl << endl;
+    return 0;
+}
+
 int Register(int number, char const * name)
 {
     cout << "Number: " << number << endl;
@@ -576,17 +618,17 @@ int Register(int number, char const * name)
 
 int main()
 {
-    Register(1,"ZhangSan"); /* 不能确定 */
-    Register(2,"LiSi"); /* 不能确定 */
-    Register(3,"WangWu", 20); /* 能够确定 */
-    Register(4,"Tom", 18, "England"); /* 能够确定 */
+    Register(1,"ZhangSan"); /* error */
+    Register(2,"LiSi"); /* error */
+    Register(3,"WangWu", 20); 
+    Register(4,"Tom", 18, "England"); 
     return 0;
 }
 ```
 
 # 动态内存分配和释放
 
-C语言的动态内存分配和释放使用malloc()和free()等函数，它们来自标准函数库。
+C语言的动态内存分配和释放使用***函数***：malloc()、free()等，它们来自标准函数库。
 
 ```
 #include <stdlib.h>
@@ -600,7 +642,7 @@ int main()
 }
 ```
 
-C++语言的动态内存分配和释放使用 **“运算符”** new和delete，它们是语言的组成部分。
+C++语言的动态内存分配和释放使用***运算符***：new、delete，它们是语言的组成部分。
 
 ```
 int main()
@@ -615,6 +657,8 @@ int main()
 ## 使用方法
 
 方法1：
+
+分配和释放一个变量的空间
 
 type *p; p=new type; delete p;
 
@@ -631,6 +675,8 @@ int main()
 ```
 方法2：
 
+分配和释放一个变量的空间，并赋予初值。
+
 type *p; p=new type(x); delete p;
 
 
@@ -646,6 +692,8 @@ int main()
 ```
 
 方法3：
+
+分配和释放多个变量（一个数组）的空间。
 
 type *p; p=new type[x]; delete []p;
 
@@ -665,7 +713,7 @@ int main()
 }
 ```
 
-动态分配和释放空间较大时，未delete或多次delete，都可能导致程序崩溃。
+未delete或多次delete，都可能导致程序崩溃。
 
 ```
 #include <iostream>

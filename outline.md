@@ -484,7 +484,7 @@ C++程序编译实例：
 
 
 ```
-int GetMax(int x, int y)
+int GetMax2(int x, int y)
 {
     if(x>y)
         return x;
@@ -492,11 +492,11 @@ int GetMax(int x, int y)
         return y;
 }
 
-int GetMax(int x, int y, int z)
+int GetMax3(int x, int y, int z)
 {
     int tmp1,tmp2;
-    tmp1=GetMax(x,y);
-    tmp2=GetMax(tmp1,z);
+    tmp1=GetMax2(x,y);
+    tmp2=GetMax2(tmp1,z);
     return tmp2;
 }
 
@@ -552,7 +552,7 @@ nm test.exe | find "GetMax"
 004015c0 T __Z6GetMaxii
 ```
 
-两个以上的函数，具有相同的函数名，但是形参个数或者类型不同.在函数调用的时候，编译器会根据实参的类型及个数的最佳匹配来自动确定调用哪一个函数。
+两个以上的函数，具有相同的函数名，但是形参个数或者类型不同。在函数调用的时候，编译器会根据实参的类型及个数的最佳匹配来自动确定调用哪一个函数。
 
 用调试器验证调用了正确的函数。
 
@@ -737,4 +737,214 @@ int main()
     return 0;
 }
 ```
+
+# 面向过程与面向对象
+
+## 摇狗尾巴
+
+面向过程
+
+## 狗摇尾巴
+
+面向对象
+
+物质世界由不同种类的实体构成，不同的实体拥有不同的属性，能够执行不同的动作。
+
+在C++中，用“类”表示种类，用“对象”表示实体，用“成员变量”表示属性，用“成员函数”表示动作。
+
+采用面向对象的方法，能够让程序设计更加贴近于现实世界和日常生活，从而提高软件开发的效率和质量。
+
+面向对象的三大特征：
+
+1. 封装
+2. 继承
+3. 多态
+
+# 封装
+
+可从两个方面来理解封装：
+
+1. 组合
+2. 隐藏
+
+## struct
+
+如果仅从组合的角度来看，C语言的struct已具备一定程度的封装功能。
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct student
+{
+    char name[10];
+    int number;
+    int score;
+};
+
+int main()
+{
+    struct student zs;
+
+    strcpy(zs.name,"zhangsan");
+    zs.number = 1;
+    zs.score = 90;
+	
+    printf("%s %d %d\n", zs.name, zs.number, zs.score);
+    return 0;
+}
+```
+
+但是，struct的所有字段，都是公开的，任何人都可以随意读写，这可能带来两个方面的问题：
+
+1. 易用性问题
+
+使用者需要了解太多struct的细节，才能用好这个struct。
+
+2. 安全性问题
+
+无法确保使用者按照正确的方式使用struct。
+
+```
+strcpy(zs.name,"zhangsansansan");
+zs.number = -1;
+zs.score = 200;
+```
+
+如何解决？
+
+```
+void set_name(struct student *stu, char const *text) 
+{
+    if(strlen(text)>=10) 
+    {
+        printf("length of %s >= 10 \n", text);
+        exit(0);
+    }
+
+    strcpy(stu->name,text);
+}
+
+...
+// strcpy(zs.name,"zhangsan"); 
+set_name(&zs, "zhangsansansan");
+...
+
+```
+
+定义新的函数：set_name、set_number、set_score……
+
+仍然不能阻止使用者直接访问：zs.name、zs.number、zs.score……
+
+这是因为C语言没有提供“隐藏”的功能。
+
+真正的“隐藏”，可以解决上述两个问题：
+
+1. 易用性问题
+
+只“公开”必要的信息，其它信息全部“隐藏”起来。使用者只需要了解必要的信息，就能用好“这个东西”。
+
+2. 安全性问题
+
+只“公开”正确的使用方式，其它的方式全部“隐藏”起来。使用者只能通过正确的方式使用“这个东西”。
+
+“这个东西”就是：class。
+
+## class
+
+C++的class，把需要公开的部分和需要隐藏的部分区分开来，分别通过public和private说明。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+private:
+    char name[10];
+	
+public:
+    int number;
+    int score;
+
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+	
+};
+
+int main()
+{
+    student zs;
+
+	zs.set_name("zhangsan");
+    zs.number = 1;
+    zs.score = 90;	
+	
+    cout << zs.get_name() << " " << zs.number << " " << zs.score  << endl;
+    return 0;
+}
+```
+
+name被隐藏起来，只能通过zs.get_name()和zs.set_name()访问，不能直接通过zs.name访问。
+
+可以用相同的方法，把zs.number、zs.score隐藏起来。
+
+无论是变量还是函数，只要放到private区，都会被隐藏，class内可以访问，class外不能访问。
+
+无论是变量还是函数，只要放到public区，都会被公开，class内外都可以访问。
+
+## struct vs class
+
+1. 组合
+
+C的struct只能把变量组合起来，每一个变量称为一个“字段”。
+
+C++的class可以把变量和函数组合起来，每一个变量或函数都称为“类成员”，其中，变量也称为“成员变量”，函数也称为“成员函数”。
+
+2. 隐藏
+
+C的struct不具备隐藏的功能，使用者可以访问所有“字段”。
+
+C++的class具备隐藏功能，可以把需要公开的“类成员”放到public区，供使用者使用；把需要隐藏的“类成员”放到private区，对使用者透明。
+
+为了提供兼容性，C++也支持struct，但它的功能在原先struct的基础上有所扩展，更加接近于class。
+
+【C++中struct与class的区别与比较】
+
+https://blog.csdn.net/weixin_39640298/article/details/84349171
+
+3. 实例
+
+struct和class都是特殊的数据类型，和普通的数据类型（如：int、float、……）一样，struct和class都可以用来定义变量。使用一个数据类型来定义变量，称为对该数据类型的实例化。定义出来的每一个变量，都称为该数据类型的一个实例（instance ）。
+
+```
+int a,b,c;
+struct student zs,ls,ww;
+```
+
+我们用一个特殊的术语来称呼class的实例，这个术语就是——object（对象）。
+
+```
+class student { ... }
+student zs,ls,ww;
+```
+
+客观世界中存在很多不同类型的实体。同一种类型的实体，具备相同的特征，这些特征，对应一个class（类）；符合同一种类型特征的实体有若干个，每一个实体对应一个object（对象）。
+
+所以，类和对象是对客观世界的类型和实体的抽象描述，使用面向对象的方法，可以设计出更加接近于客观世界的程序代码。
 

@@ -953,17 +953,20 @@ student zs,ls,ww;
 ```
 class dog {
 	private:
-	char tail[10]="\n~~~\n"; /* 只能自己摇，别人不能动 */
+	char tail[10]="\n~~~\n"; /* 私有，别人不能碰 */
 
 	public:
-	void wag(){
+	void wag(){ /* 公有，别人可以调用 */
 		cout << tail;
 	}
+	
+	/* 注：这里的“别人”，是指dog以外的代码 */
 };
 
 ...
 
 dog wangcai;
+cout << wangcai.tail; /* error */
 wangcai.wag();
 ```
 

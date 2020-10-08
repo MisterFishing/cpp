@@ -87,7 +87,8 @@ https://blog.csdn.net/bigheadyushan/article/details/77828949
 # 第一个C++程序
 
 ```c++
-int main(){
+int main()
+{
     return 0; /* 1、2、3…… */
 }
 ```
@@ -106,7 +107,8 @@ echo %errorlevel%
 
 ```c++
 #include <stdio.h>
-int main(){
+int main()
+{
     printf("Hello, I'm a C++ program.\n");
     return 0;
 }
@@ -125,7 +127,8 @@ int main(){
 ```c++
 #include <iostream>
 using namespace std;
-int main(){
+int main()
+{
     cout << "Hello, I'm really a C++ program." << endl;
     return 0;
 }
@@ -371,12 +374,14 @@ void swap(int & x, int & y)
 ```
 int x=1;
 
-int f(){
+int f()
+{
     x=2;
     return x;
 }
 
-int main(){
+int main()
+{
     int a=3;
     a = f();
     cout << a << endl;
@@ -390,12 +395,14 @@ int main(){
 ```
 int x=1;
 
-int & f(){
+int & f()
+{
     x=2;
     return x;
 }
 
-int main(){
+int main()
+{
     int a=3;
     f() = a;
     cout << x << endl;
@@ -409,7 +416,8 @@ int main(){
 ## 内联函数例子
 
 ```
-inline int add(int value) {
+inline int add(int value) 
+{
     int x;
     x = value + 1;
     x = x + 2;
@@ -417,7 +425,8 @@ inline int add(int value) {
     return x;
 }
 
-int main(){
+int main()
+{
     int a,b;
     cin >> a;
     b=add(a);
@@ -952,11 +961,15 @@ student zs,ls,ww;
 
 ```
 class dog {
-	private:
-	char tail[10]="\n~~~\n"; /* 私有，别人不能碰 */
 
-	public:
-	void wag(){ /* 公有，别人可以调用 */
+	/* 私有，别人不能碰 */
+	private:
+	char tail[10]="\n~~~\n"; 
+
+	/* 公有，别人可以调用 */
+	public: 
+	void wag()
+	{ 
 		cout << tail;
 	}
 	
@@ -966,9 +979,402 @@ class dog {
 ...
 
 dog wangcai;
-cout << wangcai.tail; /* error */
-wangcai.wag();
+cout << wangcai.tail; 	/* 错误：“别人”不能访问私有成员 */
+wangcai.wag();			/* 正确：“别人”可以访问公有成员 */
 ```
+
+# 初始化
+
+每个变量都对应一段内存空间，在定义变量的时候，可以对这段内存空间进行初始化。注意，初始化只有一次机会，就是在定义这个变量的时候。
+
+如果在定义变量的时候不进行初始化，则该变量（对应的内存空间）的值是随机的，直到第一次为该变量赋值。
+
+```
+int a;
+int b;
+cout << a << " " << b << endl;
+
+a=1;
+b=2;
+cout << a << " " << b << endl;
+```
+
+在定义变量的时候，可以使用括号或赋值符号对变量进行初始化操作。
+
+```
+int a(0);
+int b=0;
+cout << a << " " << b << endl;
+
+a=1;
+b=2;
+cout << a << " " << b << endl;
+```
+
+同样，如果在定义对象的时候不进行初始化，则该对象的各个成员变量（对应的内存空间）的值是随机的，直到第一次为该对象的各个成员变量赋值。
+
+```
+student ls;
+cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+
+ls.set_name("lisi");
+ls.number = 2;
+ls.score = 80;	
+
+cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+```
+
+在定义对象的时候，可以使用括号或赋值符号对这个对象进行初始化。
+
+可以使用已有的对象，对新的对象进行初始化。这样的方式初始化出来的新对象，和原对象是一模一样的。
+
+```
+student ls(zs);
+cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+
+student ww=zs;
+cout << ww.get_name() << " " << ww.number << " " << ww.score  << endl;
+```
+
+也可以使用自定义的“构造函数”，实现其它的初始化方法，以满足不同的初始化需求。
+
+构造函数，是一种特殊的成员函数，函数名和类名完全相同，没有返回类型。可以根据需求定义多个构造函数，它们之间通过不同的参数区分（重载构造函数）。
+
+    class student
+    {
+    	... 
+    	
+    	student()
+        {
+            cout << "In student()" << endl;
+            
+            strcpy(name,"none");
+            number=0;
+            score=0;      
+        }
+        
+        student(char const * text)
+        {
+            cout << "In student(char const * text)" << endl;
+            
+            if(strlen(text)>=10) 
+    		{
+                cout << "length of " << text << " >= 10 " << endl;
+                exit(0);
+            }
+    
+            strcpy(name,text);     
+        }   
+        
+        student(char const * text, int n, int s)
+        {
+            cout << "In student(char const * text, int n, int s)" << endl;
+            
+            if(strlen(text)>=10) 
+    		{
+                cout << "length of " << text << " >= 10 " << endl;
+                exit(0);
+            }
+    
+            strcpy(name,text);     
+            number=n;
+            score=s;        
+        }
+        
+    	...
+    	
+    }
+构造函数在定义对象时调用，如果有多个构造函数，编译器根据参数的个数和类型确定选用哪一个构造函数。
+
+```
+student zs;
+student ls("lisi",2,80);
+student ww("wangwu");
+```
+
+如果不自定义任何构造函数，编译器会提供一个默认的不带任何参数的构造函数，这个构造函数不会对成员变量进行任何操作。一旦有了自定义的构造函数，这个默认的构造函数就失效了。例如，
+
+```
+student zs;
+```
+
+在自定义构造函数之前，调用的是默认的构造函数。在自定义构造函数
+
+```
+student()
+{
+    strcpy(name,"none");
+    number=0;
+    score=0;      
+}
+```
+
+之后，调用的就是这个自定义的构造函数，默认的构造函数已经失效了。
+
+另外，编译器还提供了另一个默认的构造函数，叫做“复制构造函数”或“拷贝构造函数”。这个构造函数带一个参数，参数类型是该类的引用类型。该构造函数的原型如下：
+
+```
+student(student & s);
+```
+
+当使用一个已有的对象，对新的对象进行初始化时，就会调用这个构造函数。这个构造函数会采用“位拷贝”的方式来初始化新的对象，所以初始化出来的新对象和原对象是一模一样的。
+
+```
+student ls(zs);
+cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+
+student ww=zs;
+cout << ww.get_name() << " " << ww.number << " " << ww.score  << endl;
+```
+
+可以自定义这个“拷贝构造函数”。
+
+```
+student(student & s)
+{
+    cout << "In student(student & s)" << endl;
+
+    strcpy(name,s.name);
+    number=s.number;
+    score=s.score;
+}
+```
+
+一旦有了自定义的“拷贝构造函数”，默认的“拷贝构造函数”就失效了。
+
+思考：默认的“拷贝构造函数”已经工作得很好了，为什么还需要自定义“拷贝构造函数”？
+
+## 浅拷贝 vs 深拷贝
+
+普通变量的拷贝：
+
+```
+int a,b;
+a=1;
+out << a << endl;
+
+b=a;
+out << b << endl;
+```
+
+指针的拷贝：
+
+```
+char *p1;
+p1=new char[1000000];
+strcpy(p1,"hello");
+cout << p1 << endl;
+
+char *p2;
+p2=p1;
+cout << p2 << endl; 
+```
+
+或者
+
+```
+char *p2;
+p2=new char[1000000];
+strcpy(p2,p1);
+cout << p2 << endl;   
+```
+
+两者都实现了指针的拷贝，但前者是拷贝指针本身的值，并没有拷贝指针指向的内容（浅拷贝）；后者拷贝了指针指向的内容（深拷贝）。对浅拷贝来说，对一个指针指向的内容进行操作，会对另一个指针产生影响；对深拷贝来说，对一个指针指向的内容进行操作，不会对另一个指针造成影响。
+
+```
+strcpy(p1,"world");
+cout << p2 << endl;   
+```
+
+更大的影响，可能出现在释放内存的时候。
+
+```
+delete[] p1;
+delete[] p2;
+cout << "OK" << endl;
+```
+
+# 扫尾
+
+如果一个指针变量指向了一段动态分配的内存空间，在释放指针变量时，系统只会释放该指针变量本身（4字节），不会自动释放它指向的内存空间。
+
+```
+#include <iostream>
+using namespace std;
+
+void func(int i)
+{
+    char *p;
+    p=new char[1000000];
+    cout  << i << endl;
+}
+
+int main()
+{
+    for(int i=1; i<=4000; i++){
+        func(i);
+    }
+
+    cout << "OK" << endl;
+    return 0;
+}
+```
+
+同样，如果一个对象中存在指针类型的成员变量，在释放该对象时，系统只会释放指针变量本身，不会自动释放它指向的内存空间。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+private:
+    char name[10];
+
+public:
+    int number;
+    int score;
+    char * resume;
+
+    student()
+    {
+        strcpy(name,"none");
+        number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(char const * text)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * text, int n, int s)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text);     
+        number=n;
+        score=s;
+        resume=new char[1000000];   
+        strcpy(resume, "Good Boy! ......");        
+    }
+
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display()
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+};
+
+int main()
+{
+    for(int i=1; i<=4000; i++)
+    {
+        student zs("zhangsan",1,90);
+        cout  << i << endl;
+    }
+    
+    cout << "OK" << endl;
+    return 0;
+}
+```
+
+所以，需要提供一个方法，在释放对象的时候执行一些“扫尾”工作，这个方法就是“析构函数”。
+
+析构函数也是一种特殊的成员函数，函数名是在类名前面加一个~号，没有返回类型，也没有参数。析构函数不能重载，每个类只有一个析构函数。析构函数在释放对象时调用，可用于释放动态申请的内存空间，也可以执行其它的扫尾工作。
+
+```
+class student
+{
+	...
+	
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+	...
+
+}
+```
+
+不同的对象在释放的时候，都会调用自己的析构函数。
+
+```
+for(int i=1; i<=4000; i++)
+{
+    student zs("zhangsan",1,90);
+    student ls("lisi",2,80);
+    cout  << i << endl;
+}
+```
+
+思考：以下代码会出现什么问题？
+
+```
+for(int i=1; i<=4000; i++)
+{
+    student zs("zhangsan",1,90);
+    student ls(zs);
+    cout  << i << endl;
+}
+```
+
+当使用一个已有的对象，对新的对象进行初始化时，如果成员变量中有指针类型的变量，默认的“拷贝构造函数”执行的是“浅拷贝”。如果需要执行“深拷贝”，就需要使用自定义的“拷贝构造函数”，并确保自定义时使用了正确的方法。
+
+```
+student(student & s)
+{
+    strcpy(name,s.name);
+    number=s.number;
+    score=s.score;
+    
+    /* error */
+    resume=s.resume; 
+
+	/* correct */
+	resume=new char[1000000];
+    strcpy(resume,s.resume);     
+}
+```
+
+
+
+
+
+
+
+
 
 
 

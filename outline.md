@@ -1152,13 +1152,17 @@ student(student & s)
 #include <iostream>
 using namespace std;
 
+void func(int i)
+{
+    char *p;
+    p=new char[1000000];
+    cout  << i << endl;
+}
+
 int main()
 {
-    for(int i=1; i<=4000; i++)
-    {
-        char *p;
-        p=new char[1000000];
-        cout  << i << endl;
+    for(int i=1; i<=4000; i++){
+        func(i);
     }
 
     cout << "OK" << endl;
@@ -1175,10 +1179,10 @@ using namespace std;
 
 class student
 {
-private:
+    private:
     char name[10];
 
-public:
+    public:
     int number;
     int score;
     char * resume;
@@ -1242,12 +1246,16 @@ public:
     }
 };
 
+void func(int i)
+{
+    student zs("zhangsan",1,90);
+    cout  << i << endl;
+}
+
 int main()
 {
-    for(int i=1; i<=4000; i++)
-    {
-        student zs("zhangsan",1,90);
-        cout  << i << endl;
+    for(int i=1; i<=4000; i++){
+        func(i);
     }
     
     cout << "OK" << endl;
@@ -1328,10 +1336,9 @@ char *p2;
 p2=new char[1000000];
 strcpy(p2,p1);
 cout << p2 << endl; 
-
 ```
 
-两者都实现了指针的拷贝，但前者是拷贝指针本身的值，并没有拷贝指针指向的内容（浅拷贝）；后者是拷贝指针指向的内容（深拷贝）。对浅拷贝来说，对一个指针指向的内容的进行操作，会对另一个指针产生影响。对深拷贝来说，对一个指针指向的内容进行操作，不会对另一个指针造成影响。
+两者都实现了指针的拷贝，但前者是拷贝指针本身的值，并没有拷贝指针指向的内容（浅拷贝）；后者是拷贝指针指向的内容（深拷贝）。对浅拷贝来说，对一个指针指向的内容的进行操作，会对另一个指针产生影响；对深拷贝来说，对一个指针指向的内容进行操作，不会对另一个指针造成影响。
 
 ```
 strcpy(p1,"world");
@@ -1346,9 +1353,7 @@ delete[] p2;
 cout << "OK" << endl;
 ```
 
-当使用一个已有的对象，对新的对象进行初始化时，如果成员变量中有指针类型的变量，默认的“拷贝构造函数”执行的是“浅拷贝”。
-
-如果需要执行“深拷贝”，就需要使用自定义的“拷贝构造函数”，并确保真正执行了“深拷贝”。
+当使用一个已有的对象，对新的对象进行初始化时，默认的“拷贝构造函数”会采用“位拷贝”的方式来初始化新的对象。如果成员变量中有指针类型的变量，默认的“拷贝构造函数”只能达到“浅拷贝”的效果。如果需要达到“深拷贝”的效果，就需要使用自定义的“拷贝构造函数”，并确保真正执行了“深拷贝”。
 
 ```
 student(student & s)

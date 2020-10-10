@@ -1365,8 +1365,8 @@ student(student & s)
     /* error */
     resume=s.resume; 
 
-	/* correct */
-	resume=new char[1000000];
+    /* correct */
+    resume=new char[1000000];
     strcpy(resume,s.resume);     
 }
 ```

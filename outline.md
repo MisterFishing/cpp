@@ -1090,6 +1090,17 @@ cout << ww.get_name() << " " << ww.number << " " << ww.score  << endl;
 student zs;
 student ls("lisi",2,80);
 student ww("wangwu");
+
+/* or */
+
+student zs={};
+student ls={"lisi",2,80};
+student ww={"wangwu"};
+
+/* or */
+student zs=student();
+student ls=student("lisi",2,80);
+student ww=student("wangwu");
 ```
 
 如果不自定义任何构造函数，编译器会提供一个默认的不带任何参数的构造函数，这个构造函数不会对成员变量进行任何操作。一旦有了自定义的构造函数，这个默认的构造函数就失效了。例如，
@@ -1141,6 +1152,29 @@ student(student & s)
 ```
 
 一旦有了自定义的“拷贝构造函数”，默认的“拷贝构造函数”就失效了。
+
+当使用上述自定义的“拷贝构造函数”时，以下代码会出现什么问题？
+
+```
+student zs=student();
+student ls=student("lisi",2,80);
+student ww=student("wangwu");
+```
+
+***回顾：左值 vs 右值***
+
+修改自定义的“拷贝构造函数”
+
+```
+student(student const & s)
+{
+    cout << "In student(student & s)" << endl;
+
+    strcpy(name,s.name);
+    number=s.number;
+    score=s.score;
+}
+```
 
 思考：默认的“拷贝构造函数”已经能够完成拷贝对象的工作了，为什么还需要自定义的“拷贝构造函数”？
 
@@ -1285,7 +1319,7 @@ class student
 不同的对象在释放的时候，都会调用自己的析构函数。
 
 ```
-for(int i=1; i<=4000; i++)
+void func(int i)
 {
     student zs("zhangsan",1,90);
     student ls("lisi",2,80);
@@ -1296,7 +1330,7 @@ for(int i=1; i<=4000; i++)
 思考：以下代码会出现什么问题？
 
 ```
-for(int i=1; i<=4000; i++)
+void func(int i)
 {
     student zs("zhangsan",1,90);
     student ls(zs);
@@ -1311,11 +1345,11 @@ for(int i=1; i<=4000; i++)
 ```
 int a;
 a=1;
-out << a << endl;
+cout << a << endl;
 
 int b;
 b=a;
-out << b << endl;
+cout << b << endl;
 ```
 
 指针的拷贝：
@@ -1356,7 +1390,7 @@ cout << "OK" << endl;
 当使用一个已有的对象，对新的对象进行初始化时，默认的“拷贝构造函数”会采用“位拷贝”的方式来初始化新的对象。如果成员变量中有指针类型的变量，默认的“拷贝构造函数”只能达到“浅拷贝”的效果。如果需要达到“深拷贝”的效果，就需要使用自定义的“拷贝构造函数”，并确保真正执行了“深拷贝”。
 
 ```
-student(student & s)
+student(student const & s)
 {
     strcpy(name,s.name);
     number=s.number;
@@ -1371,8 +1405,1189 @@ student(student & s)
 }
 ```
 
+完整的代码如下。
 
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
 
+class student
+{
+    private:
+    char name[10];
+
+    public:
+    int number;
+    int score;
+    char * resume;
+
+    student()
+    {
+        strcpy(name,"none");
+        number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(student const & s)
+    {
+        strcpy(name,s.name);
+        number=s.number;
+        score=s.score;
+        resume=new char[1000000];
+        strcpy(resume,s.resume);     
+    }
+    
+    student(char const * text)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * text, int n, int s)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text);     
+        number=n;
+        score=s;
+        resume=new char[1000000];   
+        strcpy(resume, "Good Boy! ......");        
+    }
+
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display()
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+};
+
+void func(int i)
+{
+    student zs("zhangsan",1,90);
+    student ls(zs);
+    cout  << i << endl;
+}
+
+int main()
+{
+    for(int i=1; i<=4000; i++){
+        func(i);
+    }
+    
+    cout << "OK" << endl;
+    return 0;
+}
+```
+
+# 数组
+
+数组的定义
+
+```
+/* 普通数组 */
+int a[3];
+
+/* 对象数组 */
+student stu[3];
+```
+
+数组的使用
+
+```
+/* 普通数组 */
+a[0]=0;
+for(int i=0; i<3; i++)
+{
+	cout << a[i] << endl;
+}
+
+/* 对象数组 */
+stu[0].set_name("zhangsan");
+stu[0].number = 1;
+stu[0].score = 90;	
+
+for(int i=0; i<3; i++)
+{
+	stu[i].display();
+}
+
+```
+
+数组的初始化
+
+```
+/* 普通数组 */
+int a[3] = { 0, 1, 2 };
+for(int i=0; i<3; i++)
+{
+	cout << a[i] << endl;
+}
+
+/* 对象数组 */
+student stu[3] = { {}, {"lisi",2,80}, {"wangwu"} };
+for(int i=0; i<3; i++)
+{
+	stu[i].display();
+}
+
+/* or */
+student stu[3] = { student(), student("lisi",2,80), student("wangwu") };
+for(int i=0; i<3; i++)
+{
+	stu[i].display();
+}
+```
+
+# 指针
+
+指针的定义
+
+```
+/* 普通指针 */
+int *ip;
+
+/* 对象指针 */
+student *sp;
+```
+
+指针的使用
+
+```
+/* 普通指针 */
+int i(100);
+ip = &i;
+cout << *ip << endl;
+
+/* 对象指针 */
+student zs("zhangsan",1,90);
+sp = &zs;
+sp->display(); // (*sp).display(); 
+```
+
+指向动态分配的内存
+
+```
+/* 普通指针 */
+ip = new int(200);
+cout << *ip << endl;
+delete ip;
+
+/* 对象指针 */
+sp = new student("lisi",2,80);
+sp->display(); // (*sp).display();
+delete sp;
+```
+
+指向数组元素，以指针的形式访问
+
+```
+/* 普通指针 */
+int ia[3]={ 1, 2, 3 }; 
+ip=ia;
+for(int i=0; i<3; i++)
+{
+    cout << *ip << endl;
+    ip++; // ip = ip + 1;
+}
+cout << *(ip-3) << endl;
+
+/* 对象指针 */
+student stu[3] = { {"zhangsan",1,90 }, {"lisi",2,80}, {"wangwu",3,70} };
+sp = stu;
+for(int i=0; i<3; i++)
+{
+    sp->display(); // (*sp).display();
+    sp++; // sp = sp + 1;
+}
+(sp-3)->display();
+```
+
+指向数组元素，以数组的形式访问
+
+```
+int ia[3]={ 1, 2, 3 }; 
+ip=ia;
+for(int i=0; i<3; i++)
+{
+    cout << ip[i] << endl;
+}
+
+student stu[3] = { {"zhangsan",1,90 }, {"lisi",2,80}, {"wangwu",3,70} };
+sp = stu;
+for(int i=0; i<3; i++)
+{
+    sp[i].display();
+}
+```
+
+上述实例，都是从一个对象的外部，通过指针访问该对象。
+
+有的时候，需要从一个对象的内部，通过指针访问该对象。
+
+这是通过this指针实现的。
+
+```
+student(char const * text, int n, int s)
+{
+    if(strlen(text)>=10) 
+    {
+        cout << "length of " << text << " >= 10 " << endl;
+        exit(0);
+    }
+
+    strcpy(this->name,text);     
+    this->number=n;
+    this->score=s;
+    this->resume=new char[1000000];   
+    strcpy(this->resume, "Good Boy! ......");        
+}
+```
+
+默认情况下，编译器会自动补充this指针（定义参数和访问对象成员的时候），所以一般不需要明确的写出来。但是，在有的情况下，需要把this指针明确的写出来。
+
+```
+student(char const * name, int number, int score)
+{
+    if(strlen(name)>=10) 
+    {
+        cout << "length of " << name << " >= 10 " << endl;
+        exit(0);
+    }
+
+    strcpy(this->name,name);     
+    this->number=number;
+    this->score=score;
+    this->resume=new char[1000000];   
+    strcpy(this->resume, "Good Boy! ......");        
+}
+```
+
+完整的代码如下。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+    private:
+    char name[10];
+
+    public:
+    int number;
+    int score;
+    char * resume;
+
+    student()
+    {
+        strcpy(name,"none");
+        number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(student const & s)
+    {
+        strcpy(name,s.name);
+        number=s.number;
+        score=s.score;
+        resume=new char[1000000];
+        strcpy(resume,s.resume);     
+    }
+    
+    student(char const * text)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * name, int number, int score)
+    {
+        if(strlen(name)>=10) 
+        {
+            cout << "length of " << name << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(this->name,name);     
+        this->number=number;
+        this->score=score;
+        this->resume=new char[1000000];   
+        strcpy(this->resume, "Good Boy! ......");        
+    }
+
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display()
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+};
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    zs.display();
+
+    student ls("lisi");
+    ls.display();
+    
+    return 0;
+}
+```
+
+通过调试器可观察到编译器自动补充的this指针。
+
+```
+(gdb) bt
+#0  student::student (this=0x61fea8,
+    name=0x40405a <std::piecewise_construct+22> "zhangsan", number=1, score=90) at test.cpp:48
+#1  0x004015f8 in main () at test.cpp:90
+
+(gdb) bt
+#0  student::student (this=0x61fe90,
+    text=0x404063 <std::piecewise_construct+31> "lisi") at test.cpp:35
+#1  0x00401616 in main () at test.cpp:93
+```
+
+# 参数传递
+
+普通变量作为参数
+
+```
+// 整型变量
+void swap(int x, int y)
+{
+    int tmp;
+    tmp=x;
+    x=y;
+    y=tmp;
+}
+
+// 对象
+void swap_number(student s1, student s2)
+{
+    int tmp;
+    tmp = s1.number;
+    s1.number = s2.number;
+    s2.number = tmp;
+}
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    zs.display();
+
+    student ls("lisi", 2, 80);
+    ls.display();
+    
+    swap_number(zs, ls);
+    zs.display();
+    ls.display();
+    return 0;
+}
+```
+
+指针变量作为参数
+
+```
+// 整型指针
+void swap(int * x, int * y)
+{
+    int tmp;
+    tmp=*x;
+    *x=*y;
+    *y=tmp;
+}
+
+// 对象指针
+void swap_number(student * s1, student  * s2)
+{
+    int tmp;
+    tmp = s1->number;
+    s1->number = s2->number;
+    s2->number = tmp;
+}
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    zs.display();
+
+    student ls("lisi", 2, 80);
+    ls.display();
+    
+    swap_number(&zs, &ls);
+    zs.display();
+    ls.display();
+    return 0;
+}
+```
+
+引用作为参数
+
+```
+// 整型引用
+void swap(int & x, int & y)
+{
+    int tmp;
+    tmp=x;
+    x=y;
+    y=tmp;
+}
+
+// 对象引用
+void swap_number(student & s1, student  & s2)
+{
+    int tmp;
+    tmp = s1.number;
+    s1.number = s2.number;
+    s2.number = tmp;
+}
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    zs.display();
+
+    student ls("lisi", 2, 80);
+    ls.display();
+    
+    swap_number(zs, ls);
+    zs.display();
+    ls.display();
+    return 0;
+}
+```
+
+# 友元
+
+可从两个方面来理解封装：
+
+1. 组合
+2. 隐藏
+
+安全性 vs 方便性
+
+友元打破了类的权限规则。为一个类设置友元后，该类的所有成员对该友元都是可见的。友元机制提高了方便性，但降低了安全性。
+
+有两种类型的友元：友元函数、友元类。
+
+## 友元函数
+
+```
+class student
+{
+    ...
+    friend void display_name(student s);
+};
+
+void display_name(student s)
+{
+    cout << s.name << endl;
+}
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    display_name(zs);
+    return 0;
+}
+```
+
+## 友元类
+
+```
+class student
+{
+    ...
+    friend class teacher;
+};
+
+class teacher
+{
+    public:
+    void check(student s)
+    {
+        cout << s.name << endl;
+        cout << s.number << endl;
+        cout << s.score << endl;
+    }
+};
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    teacher t;
+    t.check(zs);
+    return 0;
+}
+```
+
+# 类的组合
+
+一个类的成员变量，可以是普通的数据类型，也可以是类类型。
+
+如果一个成员变量是类类型，称为“类的组合”。
+
+类的组合体现了对象的包含关系。
+
+在使用类的组合时，要特别注意一个对象和它包含的对象的初始化问题。
+
+一个对象的构造函数中可以定义一个成员初始化列表，在该列表中，可以对该对象的成员（包括对象成员）进行初始化。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class point
+{
+    public:
+    float x,y;
+    point(float x, float y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+    
+    // or
+    point(float x, float y):x(x),y(y)
+    {
+    }    
+    
+};
+
+class circle
+{
+    public:
+    point center;
+    float radius;
+    circle(float x, float y, float r) : center(x,y) 
+    {
+        radius = r;
+    }
+    
+    // or
+    circle(float x, float y, float r) : center(x,y),radius(r)
+    {
+    }    
+};
+
+int main()
+{
+    circle c(50,60,20);
+    cout << c.center.x << endl;
+    cout << c.center.y << endl;
+    cout << c.radius << endl;
+    
+    return 0;
+}
+```
+
+构造函数的调用顺序：先成员，后自己。
+
+析构函数的调用顺序：先自己，后成员。
+
+如果有多个成员，要注意成员之间的先后顺序。
+
+情况很复杂，方法很简单：
+
+```
+...
+point()
+{
+    cout << "point" << endl;
+}
+...
+~point()
+{
+    cout << "~point" << endl;
+}  
+...
+circle() 
+{
+    cout << "circle" << endl;
+}
+...
+~circle()
+{
+    cout << "~circle" << endl;
+}    
+...
+```
+
+# 常对象和常成员
+
+***特别注意：初始化 ≠ 修改***
+
+## 常对象
+
+常量：初始化之后，就不能再修改的变量。
+
+```
+int a=1;
+a=2;
+
+int const b=1;
+b=2;  // error
+```
+
+常对象：初始化之后，就不能再修改的对象。
+
+```
+student zs("zhangsan",1,90);
+zs.score=100;
+
+student const ls("lisi");
+ls.score=100;  // error
+```
+
+对于成员函数，是否会修改对象？
+
+```
+student zs("zhangsan",1,90);
+zs.display();
+
+student const ls("lisi");
+ls.display();  // ???
+```
+
+编译器默认会认为所有成员函数都会修改对象。
+
+除非明确指出：本成员函数不会修改对象——常成员函数。
+
+## 常成员函数
+
+把函数声明为常成员函数。
+
+```
+void display() const
+{
+    ...
+}
+```
+
+作弊会被检查出来。
+
+```
+void display() const
+{
+    ...
+    score = 100;  // error
+}
+```
+
+## 常成员变量
+
+学号是一个学生入学就确定了的（初始化），以后不能再修改。
+
+```
+int const number;
+```
+
+会出什么问题？
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+    private:
+    char name[10];
+
+    public:
+    int const number;
+    int score;
+    char * resume;
+
+    student():number(0)
+    {
+        strcpy(name,"none");
+        // number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(student const & s):number(s.number)
+    {
+        strcpy(name,s.name);
+        // number=s.number;
+        score=s.score;
+        resume=new char[1000000];
+        strcpy(resume,s.resume);     
+    }
+    
+    student(char const * text):number(0)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * name, int number, int score):number(number)
+    {
+        if(strlen(name)>=10) 
+        {
+            cout << "length of " << name << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(this->name,name);     
+        // this->number=number;
+        this->score=score;
+        this->resume=new char[1000000];   
+        strcpy(this->resume, "Good Boy! ......");        
+    }
+
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display() const
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+};
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    // zs.number=2;
+    zs.display();
+
+    student const ls("lisi");
+    // ls.number=2;
+    ls.display();
+
+    return 0;
+}
+```
+
+常成员变量必须初始化，且只能在构造函数的成员初始化列表中进行初始化。
+
+合理使用常对象和常成员，能够增强程序的安全性和可控性。
+
+# 静态成员
+
+## 静态成员变量
+
+所有对象共享的数据，可设为静态变量。静态变量只有一份副本，所以，静态变量属于“类”，而称非静态变量属于“对象”。
+
+对于静态成员变量，类的内部只是“申明”，类的外部才是“定义”。
+
+在定义静态成员变量时，可以进行初始化。
+
+```
+class student
+{
+    public:
+    ...
+    static char school[10];
+    ...
+}
+
+char student::school[10] = "UESTC";
+
+int main()
+{
+    student zs("zhangsan",1,90);
+    zs.display();
+    cout << zs.school << endl;  // cout << student::school << endl;
+
+    student ls("lisi", 2, 80);
+    ls.display();
+    cout << ls.school << endl;  // cout << student::school << endl;
+
+    return 0;
+}
+
+```
+
+通过调试器可观察到静态成员变量的地址。
+
+```
+(gdb) p &student::school
+$2 = (char (*)[10]) 0x403008 <student::school>
+(gdb) p sizeof(student::school)
+$3 = 10
+(gdb) p &zs
+$4 = (student *) 0x61fea8
+(gdb) p sizeof(zs)
+$5 = 24
+(gdb) p &ls
+$6 = (student *) 0x61fe90
+(gdb) p sizeof(ls)
+$7 = 24
+```
+
+所以，静态成员变量不属于“对象”，而属于“类”。没有对象，也可以访问静态成员变量。访问的方式是通过“类”。
+
+```
+int main()
+{
+    strcpy(student::school, "uestc");
+    cout << student::school << endl;
+    return 0;
+}
+```
+
+## 静态成员函数
+
+编译器不会为静态成员函数自动补充this指针。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+    private:
+    char name[10];
+
+    public:
+    int number;
+    int score;
+    char * resume;
+    static char school[10];
+    
+    student()
+    {
+        strcpy(name,"none");
+        number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(student const & s)
+    {
+        strcpy(name,s.name);
+        number=s.number;
+        score=s.score;
+        resume=new char[1000000];
+        strcpy(resume,s.resume);     
+    }
+    
+    student(char const * text)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * name, int number, int score)
+    {
+        if(strlen(name)>=10) 
+        {
+            cout << "length of " << name << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(this->name,name);     
+        this->number=number;
+        this->score=score;
+        this->resume=new char[1000000];   
+        strcpy(this->resume, "Good Boy! ......");        
+    }
+
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display()
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+    
+    static void set_school(char const * text)
+    {
+        strcpy(school, text);
+        // score = 100; 
+    }
+};
+
+char student::school[10] = "UESTC";
+
+int main()
+{
+    student::set_school("uestc");
+    cout << student::school << endl;
+    return 0;
+}
+```
+
+通过调试器检查编译器是否为静态成员函数补充this指针。
+
+```
+(gdb) bt
+#0  student::set_school (
+    text=0x404045 <std::piecewise_construct+1> "uestc") at test.cpp:90
+#1  0x004015e2 in main () at test.cpp:98
+```
+
+所以，在不指定对象的情况下，静态成员函数是无法访问对象的普通成员变量的。但是，在不指定对象的情况下，静态成员函数仍然可以访问静态成员变量，因为静态成员变量属于“类”，而不属于“对象”。
+
+```
+static void set_school(char const * text)
+{
+    strcpy(school, text);
+    cout << school << endl;
+    cout << name << endl; // error
+    cout << number << endl; // error
+    cout << score << endl; // error
+}
+```
+
+如果希望用静态成员函数访问普通成员变量，必须指定明确的对象。
+
+```
+static void set_school(char const * text)
+{
+    strcpy(school, text);
+    cout << school;
+    
+    student s;
+    cout << s.name;
+    cout << s.number;
+    cout << s.score;
+}
+```
+
+## 静态成员的应用
+
+单件模式：一种常见的设计模式。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+    private:
+    char name[10];
+    student()
+    {
+        strcpy(name,"none");
+        number=0;
+        score=0;      
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }
+
+    student(student const & s)
+    {
+        strcpy(name,s.name);
+        number=s.number;
+        score=s.score;
+        resume=new char[1000000];
+        strcpy(resume,s.resume);     
+    }
+    
+    student(char const * text)
+    {
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(name,text); 
+        resume=new char[1000000];
+        strcpy(resume, "Good Boy! ......"); 
+    }   
+        
+    student(char const * name, int number, int score)
+    {
+        if(strlen(name)>=10) 
+        {
+            cout << "length of " << name << " >= 10 " << endl;
+            exit(0);
+        }
+
+        strcpy(this->name,name);     
+        this->number=number;
+        this->score=score;
+        this->resume=new char[1000000];   
+        strcpy(this->resume, "Good Boy! ......");        
+    }
+    static student * vip;    
+    
+    public:
+    int number;
+    int score;
+    char * resume;
+    static char school[10];
+
+    static student * get_vip()
+    {
+        if(vip==NULL) 
+            vip=new student();
+        return vip;   
+    }
+    
+    ~student()
+    {
+        delete[] resume;
+    }
+    
+    char const * get_name() 
+	{
+        return name;
+    }
+
+    void set_name(char const * text) 
+	{
+        if(strlen(text)>=10) 
+		{
+            cout << "length of " << text << " >= 10 " << endl;
+            exit(0);
+        }
+		
+        strcpy(name,text);
+    }
+    
+    void display()
+    {
+        cout << name << " " << number << " " << score << " " <<  resume << endl;
+    }
+    
+    static void set_school(char const * text)
+    {
+        strcpy(school, text);
+    }
+};
+
+char student::school[10] = "UESTC";
+student * student::vip = NULL;
+
+int main()
+{
+    student *vip = student::get_vip();
+    vip->set_name("zhangsan");
+    
+    student *test1 = student::get_vip();
+    test1->display();
+
+    student *test2 = student::get_vip();
+    test2->display();
+    
+    return 0;
+}
+```
 
 
 

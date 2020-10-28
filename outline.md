@@ -2470,6 +2470,8 @@ static void set_school(char const * text)
 
 单件模式：一种常见的设计模式。
 
+一般情况下，一个类可以有多个实例（对象）
+
 ```
 #include <iostream>
 #include <string.h>
@@ -2479,37 +2481,10 @@ class student
 {
     private:
     char name[10];
-    student()
-    {
-        strcpy(name,"none");
-        number=0;
-        score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }
-
-    student(student const & s)
-    {
-        strcpy(name,s.name);
-        number=s.number;
-        score=s.score;
-        resume=new char[1000000];
-        strcpy(resume,s.resume);     
-    }
+    int number;
+    int score;    
     
-    student(char const * text)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }   
-        
+    public:
     student(char const * name, int number, int score)
     {
         if(strlen(name)>=10) 
@@ -2521,69 +2496,130 @@ class student
         strcpy(this->name,name);     
         this->number=number;
         this->score=score;
-        this->resume=new char[1000000];   
-        strcpy(this->resume, "Good Boy! ......");        
     }
-    static student * vip;    
-    
-    public:
-    int number;
-    int score;
-    char * resume;
-    static char school[10];
-
-    static student * get_vip()
+   
+    void display()
     {
-        if(vip==NULL) 
-            vip=new student();
-        return vip;   
+        cout << name << " " << number << " " << score << endl;
     }
     
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-    char const * get_name() 
-	{
-        return name;
-    }
+};
 
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
+int main()
+{
+    student zs("zhangsan", 1, 90);
+    zs.display();
+
+    student ls("lisi", 2, 80);
+    ls.display();
+
+    student ww("wangwu ", 3, 70);
+    ww.display();
+    
+    return 0;
+}
+```
+
+在某些应用场景中，一个类最多只允许一个实例，如何实现？
+
+每创建一个实例，就会调用一次构造函数。
+
+上述构造函数是从类外调用的 or 从类内调用的？
+
+类外调用：使用者调用，不可控。
+
+类内调用：设计者调用，可控。
+
+只允许调用一次，所以不能从类外调用 —— 隐藏构造函数。
+
+```
+class student
+{
+    private:
+    student() { ... }
+    ...
+}
+```
+
+隐藏构造函数后，不能从类外调用构造函数。
+
+只能从类内（成员函数中）调用构造函数。
+
+```
+class student
+{
+    private:
+    student() { ... }
+    ...
+    new_student() { ... student() ... }
+    ...
+}
+```
+
+问题1：调用student()前，对象是否存在？
+
+问题2：new_student()属于类 or 对象？
+
+问题3：new_student()应该公开 or 隐藏？
+
+问题4：如何控制student()最多只调用一次？
+
+完整的代码如下。
+
+```
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+class student
+{
+    private:
+    student(char const * name, int number, int score)
+    {
+        if(strlen(name)>=10) 
+        {
+            cout << "length of " << name << " >= 10 " << endl;
             exit(0);
         }
-		
-        strcpy(name,text);
+
+        strcpy(this->name,name);     
+        this->number=number;
+        this->score=score;
+    }
+    char name[10];
+    int number;
+    int score;
+    static student * vip;    
+
+    public:
+    static student * new_student(char const * name, int number, int score)
+    {
+        if(vip==NULL) 
+            vip=new student(name, number, score);
+        else
+            cout << "sorry, only one vip" << endl;
+        return vip;   
     }
     
     void display()
     {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
+        cout << name << " " << number << " " << score << endl;
     }
     
-    static void set_school(char const * text)
-    {
-        strcpy(school, text);
-    }
 };
 
-char student::school[10] = "UESTC";
 student * student::vip = NULL;
 
 int main()
 {
-    student *vip = student::get_vip();
-    vip->set_name("zhangsan");
-    
-    student *test1 = student::get_vip();
-    test1->display();
+    student *zs = student::new_student("zhangsan", 1, 90);
+    zs->display();
 
-    student *test2 = student::get_vip();
-    test2->display();
+    student *ls = student::new_student("lisi", 2, 80);
+    ls->display();
+    
+    student *ww = student::new_student("wangwu ", 3, 70);
+    ww->display();
     
     return 0;
 }

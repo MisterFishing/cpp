@@ -2627,8 +2627,621 @@ int main()
 
 
 
+# 继承
 
+## 多个相似的类
 
+```
+#include <iostream>
+#include <cstring>
 
+using namespace std;
+
+class animal 
+{
+	public:
+	
+	char name[8];
+    
+    animal(const char * name) 
+	{
+        strncpy(this->name, name, 7);
+        this->name[7]='\0';
+    }
+
+    void say_hello() 
+	{
+        cout << "Hello" << endl;
+    }
+
+    void my_name() 
+	{
+        cout << "My name is "<< name << endl;
+    }
+    
+};
+
+class dog
+{
+	public:
+    
+    char name[8];
+	int birth;
+
+    dog(const char * name, int birth) 
+	{
+        strncpy(this->name, name, 7);
+        this->name[7]='\0';
+        this->birth=birth;
+    }
+
+    void say_hello() 
+	{
+        cout << "Wang Wang" << endl;
+    }
+    
+    void my_name() 
+	{
+        cout << "My name is "<< name << endl;
+    }
+
+    void my_birth() 
+	{
+        cout << "I born in " << birth << endl;
+    } 
+};
+
+class cat
+{
+	public:
+    
+    char name[8];
+	char color[8];
+
+    cat(const char * name, const char * color) 
+	{
+        strncpy(this->name, name, 7);
+        this->name[7]='\0';
+
+        strncpy(this->color, color, 7);
+        this->color[7]='\0';
+    }
+
+    void say_hello() 
+	{
+        cout << "Miao Miao" << endl;
+    }
+    
+    void my_name() 
+	{
+        cout << "My name is "<< name << endl;
+    }
+
+    void my_color() 
+	{
+        cout << "I am " << color << endl;
+    }
+};
+
+int main()
+{
+    animal a("Animal");
+    a.say_hello();
+    a.my_name();
+
+    dog b("WangCai", 2020);
+    b.say_hello();
+    b.my_name();
+    b.my_birth();
+      
+    
+    cat c("JiaFei", "BLACK");
+    c.say_hello();
+    c.my_name();
+    c.my_color();
+
+    return 0;
+}
+```
+
+## 基类与派生类
+
+重用：name, my_name()
+
+改造：say_hello()
+
+扩充：birth, my_birth(),  color, my_color()
+
+从animal到dog/cat：派生或继承
+
+animal：基类
+
+dog、cat：派生类
+
+```
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+class animal 
+{
+	public:
+	
+	char name[8];
+    
+    animal(const char * name) 
+	{
+        strncpy(this->name, name, 7);
+        this->name[7]='\0';
+    }
+
+    void say_hello() 
+	{
+        cout << "Hello" << endl;
+    }
+
+    void my_name() 
+	{
+        cout << "My name is "<< name << endl;
+    }
+    
+};
+
+class dog : public animal
+{
+	public:
+    
+	int birth;
+
+    dog(const char * name, int birth) : animal(name) 
+	{
+        this->birth=birth;
+    }
+
+    void say_hello() 
+	{
+        cout << "Wang Wang" << endl;
+    }
+    
+    void my_birth() 
+	{
+        cout << "I born in " << birth << endl;
+    } 
+};
+
+class cat : public animal
+{
+	public:
+    
+	char color[8];
+
+    cat(const char * name, const char * color) : animal(name) 
+	{
+        strncpy(this->color, color, 7);
+        this->color[7]='\0';
+    }
+
+    void say_hello() 
+	{
+        cout << "Miao Miao" << endl;
+    }
+    
+    void my_color() 
+	{
+        cout << "I am " << color << endl;
+    }
+};
+
+int main()
+{
+    animal a("Animal");
+    a.say_hello();
+    a.my_name();
+
+    dog b("WangCai", 2020);
+    b.say_hello();
+    b.my_name();
+    b.my_birth();
+    
+    cat c("JiaFei", "BLACK");
+    c.say_hello();
+    c.my_name();
+    c.my_color();
+
+    return 0;
+}
+```
+
+通过调试器查看基类对象、派生类对象的内存空间分配情况
+
+对象的值、大小、地址、成员变量、成员函数
+
+```
+(gdb) p a
+(gdb) p sizeof(a)
+(gdb) p &a
+(gdb) p &a.name
+... b or c
+(gdb) p a.my_name
+(gdb) p b.my_name
+(gdb) p c.my_name
+... 
+(gdb) p a.say_hello
+(gdb) p b.say_hello
+(gdb) p c.say_hello
+...
+```
+
+如何访问作用域被覆盖的成员变量/成员函数？
+
+```
+b.say_hello();
+b.dog::say_hello();
+b.animal::say_hello();
+
+c.say_hello();
+c.cat::say_hello();
+c.animal::say_hello();
+```
+
+构造函数/析构函数及其调用顺序。
+
+```
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+class animal 
+{
+	public:
+	
+	char name[8];
+    
+    animal(const char * name) 
+	{
+        cout << "animal(): " << name << endl;
+        strncpy(this->name, name, 7);
+        this->name[7]='\0';
+    }
+
+    ~animal() 
+	{
+        cout << "~animal(): " << name << endl;
+    }
+    
+    void say_hello() 
+	{
+        cout << "Hello" << endl;
+    }
+
+    void my_name() 
+	{
+        cout << "My name is "<< name << endl;
+    }
+    
+};
+
+class dog : public animal
+{
+	public:
+    
+	int birth;
+
+    dog(const char * name, int birth) : animal(name) 
+	{
+        cout << "dog():" << name << endl;
+        this->birth=birth;
+    }
+
+    ~dog() 
+	{
+        cout << "~dog():" << name << endl;
+    }
+    
+    void say_hello() 
+	{
+        cout << "Wang Wang" << endl;
+    }
+    
+    void my_birth() 
+	{
+        cout << "I born in " << birth << endl;
+    } 
+};
+
+class cat : public animal
+{
+	public:
+    
+	char color[8];
+
+    cat(const char * name, const char * color) : animal(name) 
+	{
+        cout << "cat():" << name << endl;
+        strncpy(this->color, color, 7);
+        this->color[7]='\0';
+    }
+
+    ~cat() 
+	{
+        cout << "~cat():" << name << endl;
+    }
+    
+    void say_hello() 
+	{
+        cout << "Miao Miao" << endl;
+    }
+    
+    void my_color() 
+	{
+        cout << "I am " << color << endl;
+    }
+};
+
+int main()
+{
+    animal a("Animal");
+    a.say_hello();
+    a.my_name();
+
+    dog b("WangCai", 2020);
+    b.say_hello();
+    b.my_name();
+    b.my_birth();
+    
+    cat c("JiaFei", "BLACK");
+    c.say_hello();
+    c.my_name();
+    c.my_color();
+
+    return 0;
+}
+```
+
+## 访问权限控制
+
+能够继承，不代表能够访问。
+
+以基类中的成员变量name为例，有3个位置可能对它进行访问。
+
+```
+char name[8];
+```
+
+1. 基类内部
+
+```
+void say_hello() 
+{
+    cout << "Hello" << name << endl;  
+}
+```
+
+2. 基类外部、派生类内部
+
+```
+void say_hello() 
+{
+	cout << "Wang Wang ... " << name << endl;  
+}
+```
+
+3. 基类外部、派生类外部
+
+```
+dog b("WangCai", 2020);
+cout << b.name;
+```
+
+是否能访问成功，取决于两点。
+
+1. 基类成员的访问控制属性（public成员、protected成员、private成员）
+
+```
+public:
+char name[8];
+
+protected:
+char name[8];
+
+private:
+char name[8];
+```
+
+2. 派生类的继承方式（public继承、protected继承、private继承）
+
+```
+class dog : public animal { ... }
+class dog : protected animal { ... }
+class dog : private animal { ... }
+```
+
+共 3x3=9 种组合
+
+| 继承方式 | public成员 | protected成员 | private成员 |
+|  ----  | ----  | ----  | ----  |
+| public继承 | public成员 |protected成员|N/A|
+| protected继承 | protected成员 |protected成员|N/A|
+| private继承 | private成员 |private成员|N/A|
+
+## 多继承
+
+一个派生类可以有多个基类。
+
+```
+class shenshou : public dog, public cat
+{
+	public:
+    shenshou(const char * name, int birth, const char * color) : dog(name,birth) , cat(name, color) 
+	{
+    }
+};
+```
+
+以下代码是否正确？
+
+```
+shenshou s("ShenShou", 2022, "GOLD");
+s.my_birth();
+s.my_color();
+```
+
+以下代码是否正确？
+
+```
+shen_shou s("ShenShou", 2022, "GOLD");
+cout << s.name;
+s.say_hello();
+s.my_name();
+```
+
+dog？cat？animal？
+
+如何更加优美的解决问题？
+
+## 虚基类
+
+```
+class dog : public virtual animal
+class cat : public virtual animal
+class shenshou : public dog, public cat
+{
+	public:
+    shenshou(const char * name, int birth, const char * color) : dog(name,birth),cat(name,color),animal(name) 
+	{
+    }        
+};
+```
+
+以下代码是否正确？
+
+    shenshou s("ShenShou", 2022, "GOLD");
+    cout << s.name << endl;
+    s.my_name();
+    s.animal::say_hello();
+# 多态
+
+多态：一种形式，多种状态
+
+## 多态的类型
+
+静态多态：函数重载、运算符重载、模板
+
+动态多态：虚函数
+
+## 虚函数
+
+快乐的动物园
+
+```
+int main()
+{
+    animal a("Animal");
+    dog b("WangCai", 2020);
+    cat c("JiaFei", "BLACK");
+    
+	cout << "--- At home ---" << endl;
+    a.say_hello();
+    b.say_hello();
+    c.say_hello();
+	
+	cout << "--- At zoo ---" << endl;
+
+    animal *zoo[3]={&a, &b, &c};
+    for(int i=0; i<3; i++)
+	{
+        zoo[i]->say_hello();
+    }
+    
+    return 0;
+}
+```
+
+只看到animal，没看到dog、cat
+
+缺乏个性
+
+### 虚函数
+
+把基类的成员函数申明为虚函数
+
+```
+virtual void say_hello() { ... }
+```
+
+为什么能实现这个效果？—— vtable
+
+通过调试器，观察vtable。
+
+```
+(gdb) p sizeof(a)
+(gdb) p sizeof(b)
+(gdb) p sizeof(c)
+```
+
+定位多出的空间的地址
+
+```
+(gdb) p &a
+(gdb) p &a.name
+(gdb) p &b
+(gdb) p &b.name
+(gdb) p &c
+(gdb) p &c.name
+```
+
+查看该空间的值
+
+```
+(gdb) p a
+(gdb) p/x *(int *)&a
+```
+
+把这个值当作一个地址，查看该地址指向的空间的值
+
+```
+(gdb) p *(*(int *)&a)
+```
+
+把这个值也当作一个地址来查看
+
+```
+(gdb) p (void*)*(*(int *)&a)
+... <animal::say_hello()>
+(gdb) p a.say_hello
+```
+
+同样的方法，查看其它几个对象对应的地址
+
+```
+(gdb) p (void*)*(*(int *)&b)
+... <dog::say_hello()>
+(gdb) p b.say_hello
+(gdb) p (void*)*(*(int *)&c)
+... <cat::say_hello()>
+(gdb) p c.say_hello
+```
+
+每个对象有一个vtable
+
+每个vtable中记录了这个对象可用的虚函数的地址
+
+say_hello是第1个虚函数
+
+***思考：***
+
+当存在第2个虚函数时（如say_hello2()），如何查看？
+
+```
+(gdb) p/x *(int *)&a+4
+(gdb) p *(*(int *)&a+4)
+(gdb) p (void*)*(*(int *)&a+4)
+(gdb) x *(int *)&a
+(gdb) x/2 *(int *)&a
+```
+
+当存在第3个、第4个……虚函数时，如何查看？
 
 

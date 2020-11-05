@@ -26,13 +26,6 @@ double addone(double x)
     return (x+1);
 }
 
-template <class T>
-T addone(T x)
-{
-    cout << "T: ";
-    return (x+1);
-}
-
 int main()
 {
     char x1='a';

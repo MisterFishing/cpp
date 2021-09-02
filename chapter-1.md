@@ -13,13 +13,15 @@ theme: gaia
 
 ---
 
-# 个人简介
+<!-- _class: lead -->
 
 **主讲课程**
+
 C++程序设计、形式语言与自动机、程序设计语言与编译
 
 **研究方向**
-云计算、大数据、人工智能
+
+程序设计语言、计算理论、云计算
 
 ---
 
@@ -85,7 +87,7 @@ The C++ Programming Language（Bjarne Stroustrup）
 C++ Primer（Stanley B. Lippman）
 
 **课程MOOC**
-https://www.icourse163.org/course/UESTC-1001774006?tid=1465243448
+www.icourse163.org/course/UESTC-1001774006?tid=1465243448
 
 ---
 
@@ -161,12 +163,10 @@ C:\>
 ---
 
 **参考资料**
-[GCC](https://gcc.gnu.org/onlinedocs/)
-[GCC参数详解](https://www.runoob.com/w3cnote/gcc-parameter-detail.html)
-[GDB](http://www.gnu.org/software/gdb/documentation/)
-[C++ GDB调试大全](https://blog.csdn.net/bigheadyushan/article/details/77828949)
 [C/C++ for Visual Studio Code](https://code.visualstudio.com/docs/languages/cpp)
 [Using GCC with MinGW](https://code.visualstudio.com/docs/cpp/config-mingw)
+[GCC参数详解](https://www.runoob.com/w3cnote/gcc-parameter-detail.html)
+[C++ GDB调试大全](https://blog.csdn.net/bigheadyushan/article/details/77828949)
 
 ---
 
@@ -208,7 +208,7 @@ int main()
 
 库函数：printf
 头文件：stdio.h
-文件路径：C:\tools\mingw64\x86_64-w64-mingw32\include\stdio.h
+全路径：C:\tools\mingw64\x86_64-w64-mingw32\include\stdio.h
 
 ---
 
@@ -226,7 +226,7 @@ int main()
 
 输出流对象：cout
 头文件：iostream
-文件路径：C:\tools\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\include\c++\iostream
+全路径：C:\tools\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\include\c++\iostream
 
 ---
 
@@ -272,23 +272,37 @@ cout << "c + d = " << c + d << endl;
 
 ---
 
+<!-- _class: lead -->
+
+**逻辑类型 + 引用类型 + 类类型**
+
+---
+
+<!-- _class: lead gaia -->
+
 ## 逻辑类型
 
+---
+
 ```
-int i,j;
-bool a,b;
+#include <iostream>
+using namespace std;
+int main()
+{
+    int i,j;
+    bool a = true;
+    bool b = false;
+    cout << "a = " << a << ", " << "b = " << b << endl;
 
-a = true;
-b = false;
-cout << "a = " << a << ", " << "b = " << b << endl;
+    i=a;
+    j=b;
+    cout << "i = " << i << ", " << "j = " << j << endl;
 
-i=a;
-j=b;
-cout << "i = " << i << ", " << "j = " << j << endl;
-
-a = !i;
-b = !j;
-cout << "a = " << a << ", " << "b = " << b << endl;
+    a = !i;
+    b = !j;
+    cout << "a = " << a << ", " << "b = " << b << endl;
+    return 0;
+}
 ```
 
 ---
@@ -304,13 +318,27 @@ cout << "a = " << a << ", " << "b = " << b << endl;
 引用就是别名。
 
 ```
-int number = 15;
+int number = 10;
 int & n = number;
-n = 18;
+n = 20;
 cout << number << " " << n << endl;
 ```
 
-如何验证？
+---
+
+**引用的初始化**
+
+必须在定义的时候初始化，之后一直作为该变量的别名，不能再作为其它的变量的别名。
+
+```
+int a=1, b=2;
+int &n = a;
+n = b;
+n = 3;
+cout << a << " " << b << " " << endl;
+```
+
+如何验证引用是另一个变量的别名？
 
 ---
 
@@ -327,20 +355,6 @@ cout << number << " " << n << endl;
 控制程序执行：next, step, continue, finish, set, call ……
 
 查看程序状态：list, print, display, info, watch, backtrace ……
-
----
-
-### 初始化
-
-必须在定义的时候初始化，以后不能再引用别的变量。
-
-```
-int a=1, b=2;
-int &n = a;
-n = b;
-n = 3;
-cout << a << " " << b << " " << endl;
-```
 
 ---
 
@@ -488,6 +502,8 @@ void swap(int & x, int & y)
 }
 ```
 
+引用作为形参时，在函数调用时用实参对其进行初始化。
+
 ---
 
 <!-- _class: lead gaia -->
@@ -540,7 +556,7 @@ int main()
 
 <!-- _class: lead gaia -->
 
-### 内联函数
+## 内联函数
 
 ---
 
@@ -582,7 +598,7 @@ g++ -O test.cpp -o test.exe
 
 <!-- _class: lead gaia -->
 
-### 函数重载
+## 函数重载
 
 ---
 
@@ -690,7 +706,7 @@ Breakpoint 4 at 0x4015d5: file test.cpp, line 13.
 
 <!-- _class: lead gaia -->
 
-### 默认形参值
+## 默认形参值
 
 ---
 
@@ -763,11 +779,11 @@ int main()
 
 <!-- _class: lead gaia -->
 
-### 动态内存分配和释放
+## 动态内存管理
 
 ---
 
-C语言的动态内存分配和释放使用***函数***：malloc()、free()等。
+C语言的动态内存分配和释放使用**函数**：malloc()、free()、……
 
 它们来自标准函数库。
 
@@ -785,7 +801,7 @@ int main()
 
 ---
 
-C++语言的动态内存分配和释放使用***运算符***：new、delete。
+C++语言的动态内存分配和释放使用**运算符**：new、delete
 
 它们是语言的组成部分。
 
@@ -801,9 +817,8 @@ int main()
 
 ---
 
-**使用方法**
+**分配和释放一个变量的空间**
 
-分配和释放一个变量的空间：
 type *p; p=new type; delete p;
 
 ```
@@ -820,7 +835,8 @@ int main()
 
 ---
 
-分配和释放一个变量的空间，并赋予初值：
+**分配和释放一个变量的空间，并赋予初值**
+
 type *p; p=new type(x); delete p;
 
 
@@ -837,7 +853,8 @@ int main()
 
 ---
 
-分配和释放多个变量（一个数组）的空间：
+**分配和释放一个数组的空间**
+
 type *p; p=new type[x]; delete []p;
 
 ```
@@ -858,7 +875,11 @@ int main()
 
 ---
 
-未delete或重复delete，都可能导致程序崩溃，这与操作系统的内存管理方法相关。
+**new与delete必须配合使用**
+
+未delete或重复delete，都可能导致程序崩溃。
+
+这与操作系统的内存管理方式紧密相关。
 
 ```
 #include <iostream>
@@ -887,3 +908,19 @@ int main()
 }
 ```
 
+---
+<!-- _class: lead gaia -->
+
+# 课后复习
+
+---
+
+**课程MOOC**
+www.icourse163.org/course/UESTC-1001774006?tid=1465243448
+第七章 C++基础
+
+**码图作业**
+matu.uestc.edu.cn
+班级：C++程序设计（2021）
+第7章 作业1
+第7章 作业2

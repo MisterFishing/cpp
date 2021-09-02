@@ -3,9 +3,7 @@ marp: true
 theme: gaia
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # C++程序设计
 
@@ -15,33 +13,35 @@ _class: lead gaia
 
 ---
 
-<!--
-_class: lead gaia
--->
+# 个人简介
+
+**主讲课程**
+C++程序设计、形式语言与自动机、程序设计语言与编译
+
+**研究方向**
+云计算、大数据、人工智能
+
+---
+
+<!-- _class: lead gaia -->
 
 # 什么是C++
 
 ---
 
-<!--
-_class: lead
--->
+<!-- _class: lead -->
 
 **C + 面向对象 + 其它**
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # 为什么要学习C++
 
 ---
 
-<!--
-_class: lead
--->
+<!-- _class: lead -->
 
 https://www.tiobe.com/tiobe-index
 
@@ -49,25 +49,19 @@ https://www.tiobe.com/tiobe-index
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # 如何学习C++
 
 ---
 
-<!--
-_class: lead
--->
+<!-- _class: lead -->
 
 **读代码 + 写代码 + 调代码**
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # 课程安排
 
@@ -95,9 +89,7 @@ https://www.icourse163.org/course/UESTC-1001774006?tid=1465243448
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # 实验环境
 
@@ -173,12 +165,12 @@ C:\>
 [GCC参数详解](https://www.runoob.com/w3cnote/gcc-parameter-detail.html)
 [GDB](http://www.gnu.org/software/gdb/documentation/)
 [C++ GDB调试大全](https://blog.csdn.net/bigheadyushan/article/details/77828949)
+[C/C++ for Visual Studio Code](https://code.visualstudio.com/docs/languages/cpp)
+[Using GCC with MinGW](https://code.visualstudio.com/docs/cpp/config-mingw)
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # C++程序实例
 
@@ -274,9 +266,7 @@ cout << "c + d = " << c + d << endl;
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 # 数据类型
 
@@ -303,9 +293,7 @@ cout << "a = " << a << ", " << "b = " << b << endl;
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ## 引用类型
 
@@ -356,9 +344,7 @@ cout << a << " " << b << " " << endl;
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 常引用
 
@@ -456,9 +442,7 @@ int main()
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 函数参数
 
@@ -506,9 +490,7 @@ void swap(int & x, int & y)
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 函数返回值
 
@@ -531,7 +513,7 @@ int main()
 }
 ```
 
-右值只能放在赋值符号的右边，因为它代表的，仅仅是一个“值”。
+右值只能放在赋值符号的右边，因为它代表的仅仅是一个“值”。
 
 ---
 
@@ -552,14 +534,11 @@ int main()
 }
 ```
 
-左值既可以放在赋值符号的左边，也可以放在赋值符号的右边，因为它代表的是一个“内存单元。
-
+左值既可以放在赋值符号的左边，也可以放在赋值符号的右边，因为它代表的是一个“内存单元”。
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 内联函数
 
@@ -593,17 +572,15 @@ inline仅仅是程序员对编译器提出的一个优化建议，是否采纳�
 
 即使不提这个建议，编译器也可能在适当的时候自动进行内联。
 
-编译优化选项：-O
+编译优化选项：`-O`
 
 ```
-g++ -g -O test.cpp -o test.exe
+g++ -O test.cpp -o test.exe
 ```
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 函数重载
 
@@ -711,9 +688,7 @@ Breakpoint 4 at 0x4015d5: file test.cpp, line 13.
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 默认形参值
 
@@ -786,9 +761,7 @@ int main()
 
 ---
 
-<!--
-_class: lead gaia
--->
+<!-- _class: lead gaia -->
 
 ### 动态内存分配和释放
 

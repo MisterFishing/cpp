@@ -369,14 +369,25 @@ cout << a << " " << b << " " << endl;
 常引用可以作为常量的别名。
 
 ```
-const int &n = 1;
+const int & n = 1;
 ```
+或
+```
+int const & n = 1;
+```
+
+---
 
 常引用也可以作为变量的别名。
 
 ```
 int a=1;
-const int &n = a;
+const int & n = a;
+```
+或
+```
+int a=1;
+int const & n = 1;
 ```
 
 无论怎样，常引用的值都不能修改。
@@ -395,7 +406,7 @@ n = 3; /* 错误 */
 int main()
 {
     float x, y;
-    const float pi=3.14;
+    float const pi=3.14;
 
     x=PI;
     y=pi;
@@ -416,7 +427,7 @@ int main()
 int main()
 {
     float x, y;
-    const float pi=3.14;
+    float const pi=3.14;
 
     x=PI;
     y=pi;
@@ -713,7 +724,7 @@ Breakpoint 4 at 0x4015d5: file test.cpp, line 13.
 可以在定义函数时给出默认的形参值。调用函数时如果给出了实参值，则使用给出的实参值；如果未给出实参值，则使用默认的形参值。
 
 ```
-int Register(int number, char const * name, int age=18, char const * country="China")
+int register(int number, char const * name, int age=18, char const * country="China")
 {
     cout << "Number: " << number << endl;
     cout << "Name: " << name << endl;
@@ -723,10 +734,10 @@ int Register(int number, char const * name, int age=18, char const * country="Ch
 }
 int main()
 {
-    Register(1,"ZhangSan");
-    Register(2,"LiSi");
-    Register(3,"WangWu", 20);
-    Register(4,"Tom", 18, "England");
+    register(1,"ZhangSan");
+    register(2,"LiSi");
+    register(3,"WangWu", 20);
+    register(4,"Tom", 18, "England");
     return 0;
 }
 ```
@@ -743,7 +754,7 @@ int main()
 ---
 
 ```
-int Register(int number, char const * name, int age=18, char const * country="China")
+int register(int number, char const * name, int age=18, char const * country="China")
 {
     cout << "Number: " << number << endl;
     cout << "Name: " << name << endl;
@@ -752,7 +763,7 @@ int Register(int number, char const * name, int age=18, char const * country="Ch
     return 0;
 }
 
-int Register(int number, char const * name)
+int register(int number, char const * name)
 {
     cout << "Number: " << number << endl;
     cout << "Name: " << name << endl;
@@ -767,10 +778,10 @@ int Register(int number, char const * name)
 
 int main()
 {
-    Register(1,"ZhangSan"); /* error */
-    Register(2,"LiSi"); /* error */
-    Register(3,"WangWu", 20); 
-    Register(4,"Tom", 18, "England"); 
+    register(1,"ZhangSan"); /* error */
+    register(2,"LiSi"); /* error */
+    register(3,"WangWu", 20); 
+    register(4,"Tom", 18, "England"); 
     return 0;
 }
 ```
@@ -835,7 +846,7 @@ int main()
 
 ---
 
-**分配和释放一个变量的空间，并赋予初值**
+**分配和释放一个变量的空间（初始化）**
 
 type *p; p=new type(x); delete p;
 
@@ -867,6 +878,26 @@ int main()
     char * a;
     a = new char[10];
     strcpy(a,"hello");
+    cout << a;
+    delete []a;
+    return 0;
+}
+```
+
+---
+
+**分配和释放一个数组的空间（初始化）**
+
+type *p; p=new type[x]{i,j,k,...}; delete []p;
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    char * a;
+    a = new char[10]{'h','e', 'l', 'l', 'o'};
     cout << a;
     delete []a;
     return 0;

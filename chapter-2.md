@@ -1,31 +1,68 @@
+---
+marp: true
+theme: gaia
+---
+
+<!-- _class: lead gaia -->
+
 # 面向对象
 
-摇狗尾巴：面向过程
+---
 
-狗摇尾巴：面向对象
+<!-- _class: lead -->
 
-物质世界由不同种类的实体构成，不同的实体拥有不同的属性，能够执行不同的动作。
+## 面向过程与面向对象
 
-在C++中，用“类”表示种类，用“对象”表示实体，用“成员变量”表示属性，用“成员函数”表示动作。
+**摇狗尾巴：** 面向过程
 
-采用面向对象的方法，能够让程序设计更加贴近于现实世界和日常生活，从而提高软件开发的效率和质量。
+**狗摇尾巴：** 面向对象
 
-面向对象的三大特征：
+---
 
-1. 封装
-2. 继承
-3. 多态
+## 物质世界与面向对象
+
+物质世界： 由各种不同种类的实体构成。
+面向对象： 用类表示种类，用对象表示实体。
+
+物质世界： 每种实体都拥有各种不同的属性。
+面向对象： 每种对象都拥各种不同的成员变量。
+
+物质世界： 每种实体都能够执行各种不同的动作。
+面向对象： 每种对象都能够执行各种不同的成员函数。
+
+**采用面向对象的方法，能够让程序设计更加贴近于现实世界和日常生活，从而提高软件开发的效率和质量。**
+
+---
+
+<!-- _class: lead -->
+
+## 面向对象的三大特征
+
+**封装**
+**继承**
+**多态**
+
+---
+
+<!-- _class: lead gaia -->
 
 # 封装
 
-可从两个方面来理解封装：
+---
 
-1. 组合
-2. 隐藏
+<!-- _class: lead -->
 
-## struct
+**从两个方面来理解封装**
 
-如果仅从组合的角度来看，C语言的struct已具备一定程度的封装功能。
+信息组合
+
+信息隐藏
+
+---
+
+## 结构
+
+C语言的结构（struct）已经具备一定程度的信息组合的功能。
 
 ```
 #include <stdio.h>
@@ -38,6 +75,10 @@ struct student
     int number;
     int score;
 };
+
+```
+---
+```
 
 int main()
 {
@@ -52,26 +93,35 @@ int main()
 }
 ```
 
-但是，struct的所有字段，都是公开的，任何人都可以随意读写，这可能带来两个方面的问题：
+---
+
+但是，struct的所有字段，都是公开的，任何人都可以随意读写。
+
+这可能带来两个方面的问题：
 
 1. 易用性问题
-
 使用者需要了解太多struct的细节，才能用好这个struct。
-
 2. 安全性问题
-
 无法确保使用者按照正确的方式使用struct。
 
 ```
-strcpy(zs.name,"zhangsansansan");
-zs.number = -1;
-zs.score = 200;
+strcpy(zs.name,"zhangsan");
+zs.number = 1;
+zs.score = 95;
 ```
 
-如何解决？
+---
+
+<!-- _class: lead -->
+
+**如何解决？**
+
+---
+
+定义和使用安全的函数：set_name、set_number、set_score ...
 
 ```
-void set_name(struct student *stu, char const *text) 
+void set_name(struct student * stu, char const * text) 
 {
     if(strlen(text)>=10) 
     {
@@ -81,160 +131,170 @@ void set_name(struct student *stu, char const *text)
 
     strcpy(stu->name,text);
 }
-
-...
-// strcpy(zs.name,"zhangsan"); 
-set_name(&zs, "zhangsansansan");
-...
-
 ```
 
-定义新的函数：set_name、set_number、set_score……
+```
+set_name(&zs, "zhangsan");
+```
 
-仍然不能阻止使用者直接访问：zs.name、zs.number、zs.score……
+---
 
-这是因为C语言没有提供“隐藏”的功能。
+但是，仍然不能阻止使用者直接访问struct内部。
 
-真正的“隐藏”，可以解决上述两个问题：
+```
+strcpy(zs.name,"zhangsan"); 
+```
+
+这是因为C语言并不支持“隐藏”。
+
+struct内部的所有细节，对外都是“可见”的。
+
+---
+
+真正的“隐藏”，需要同时解决上述两个问题：
 
 1. 易用性问题
-
-只“公开”必要的信息，其它信息全部“隐藏”起来。使用者只需要了解必要的信息，就能用好“这个东西”。
+实现者只“公开”必要的信息，其它不必要的信息全部“隐藏”起来；
+使用者只需要了解必要的信息。
 
 2. 安全性问题
+实现者只“公开”安全的信息，其它不安全的信息全部“隐藏”起来；
+使用者只能访问安全的信息。
 
-只“公开”正确的使用方式，其它的方式全部“隐藏”起来。使用者只能通过正确的方式使用“这个东西”。
+C++的类（class）解决了这两个问题。
 
-“这个东西”就是：class。
+---
 
-## class
+## 类
 
-C++的class，把需要公开的部分和需要隐藏的部分区分开来，分别通过public和private说明。
+C++的类（class），把需要公开的部分和需要隐藏的部分区分开来，分别通过public和private说明。
 
 ```
-#include <iostream>
-#include <string.h>
-using namespace std;
-
 class student
 {
-private:
+    private:
     char name[10];
 	
-public:
+    public:
     int number;
     int score;
 
-    char const * get_name() 
-	{
-        return name;
-    }
+```
+---
+```
 
     void set_name(char const * text) 
-	{
+    {
         if(strlen(text)>=10) 
-		{
+        {
             cout << "length of " << text << " >= 10 " << endl;
             exit(0);
         }
-		
         strcpy(name,text);
     }
-	
 };
+
+```
+---
+```
 
 int main()
 {
     student zs;
 
-	zs.set_name("zhangsan");
+    zs.set_name("zhangsan");
     zs.number = 1;
-    zs.score = 90;	
-	
-    cout << zs.get_name() << " " << zs.number << " " << zs.score  << endl;
+    zs.score = 90;
+    zs.display();
+
     return 0;
 }
 ```
 
-name被隐藏起来，只能通过zs.get_name()和zs.set_name()访问，不能直接通过zs.name访问。
+---
 
-可以用相同的方法，把zs.number、zs.score隐藏起来。
+name被隐藏起来，不能直接访问，只能通过get_name和display间接访问。（也可以用同样的方法把number和score隐藏起来）
 
-无论是变量还是函数，只要放到private区，都会被隐藏，class内可以访问，class外不能访问。
+无论是变量还是函数，只要放到private区，都会被“隐藏”，类的实现者，即class内部的代码，可以访问；类的使用者，即class外部的代码，不能访问。
 
-无论是变量还是函数，只要放到public区，都会被公开，class内外都可以访问。
+无论是变量还是函数，只要放到public区，都会被“公开”，类的实现者和使用者都可以访问。
 
-## class vs struct
+---
 
-1. 组合
+**小结**
 
-C的struct只能把变量组合起来，每个变量称为一个“字段”。
+1. 组合：C的struct只能把变量组合起来，每个变量称为一个“字段”。C++的class可以把变量和函数组合起来，每个变量称为一个“成员变量”，每个函数称为一个“成员函数”。“成员变量”和“成员函数”统称为“类成员”。
 
-C++的class可以把变量和函数组合起来，每个变量称为一个“成员变量”，每个函数称为一个“成员函数”。“成员变量”和“成员函数”统称为“类成员”。
+2. 隐藏：C的struct不具备隐藏的功能，使用者可以访问所有“字段”。C++的class具备隐藏功能，可以把需要公开的“类成员”放到public区，供使用者使用；把需要隐藏的“类成员”放到private区，对使用者透明。
 
-2. 隐藏
+---
 
-C的struct不具备隐藏的功能，使用者可以访问所有“字段”。
-
-C++的class具备隐藏功能，可以把需要公开的“类成员”放到public区，供使用者使用；把需要隐藏的“类成员”放到private区，对使用者透明。
-
-为了提供兼容性，C++也支持struct，但它的功能在原先struct的基础上有所扩展，更加接近于class。
+为了提供兼容性，C++也支持struct，但它的功能在C的struct的基础上有所扩展，更加接近于C++的class。
 
 【C++中struct与class的区别与比较】
 
 https://blog.csdn.net/weixin_39640298/article/details/84349171
 
-## class vs object
+---
 
-class是特殊的数据类型，和其它数据类型（如：int、float、struct、……）一样，class可以用来定义变量。使用一个数据类型来定义变量，称为对该数据类型的实例化。定义出来的每一个变量，都称为该数据类型的一个实例（instance ）。
+## 对象
+
+类（class）是特殊的数据类型，和其它数据类型（如：int、float、struct、……）一样，类（class）可以用来定义变量（variable）。使用一个数据类型来定义变量，称为对该数据类型的实例化。定义出来的每一个变量，都称为该数据类型的一个实例（instance）。我们用一个特殊的术语来称呼类（class）的实例，这个术语就是——对象（object）。
 
 ```
 int a,b,c;
 struct student zs,ls,ww;
 ```
 
-我们用一个特殊的术语来称呼class（类）的实例，这个术语就是——object（对象）。
-
 ```
 class student { ... }
 student zs,ls,ww;
 ```
 
-客观世界中存在很多不同类型的实体，每一个实体对应一个object（对象）。同一种类型的实体，具备相同的特征，这些特征，对应一个class（类）。
+---
 
-所以，class（类）和object（对象）是对客观世界的类型和实体的抽象描述，使用面向对象的方法，可以设计出更加接近于客观世界的程序代码。
+客观世界中存在各种不同类型的实体，每种类型对应一个类（class），每个实体对应一个对象（object）。
 
-例子：旺财是一只狗，狗这种类型都拥有尾巴这个属性，并且能够执行摇尾巴这个动作，所以，狗是一个class（类），旺财是一个object（对象）。
+所以，类和对象是对客观世界的类型和实体的抽象描述，使用面向对象的方法，可以设计出更加接近于客观世界的程序代码。
+
+例如：旺财是一只狗，狗这种类型都拥有尾巴这个属性，并且能够执行摇尾巴这个动作，所以，狗是一个类，旺财是一个对象。
+
+---
 
 ```
 class dog {
+    private:
+    char tail[10]="\n~~~\n";   /* 私有成员，“别人”不能碰狗的尾巴 */
 
-	/* 私有，别人不能碰 */
-	private:
-	char tail[10]="\n~~~\n"; 
-
-	/* 公有，别人可以调用 */
-	public: 
-	void wag()
-	{ 
-		cout << tail;
-	}
-	
-	/* 注：这里的“别人”，是指dog以外的代码 */
+    public: 
+    void wag()                 /* 公有成员，“别人”可以叫狗摇尾巴 */
+    { 
+        cout << tail;
+    }
 };
 
-...
-
 dog wangcai;
-cout << wangcai.tail; 	/* 错误：“别人”不能访问私有成员 */
-wangcai.wag();			/* 正确：“别人”可以访问公有成员 */
+cout << wangcai.tail; 	       /* 错误：访问私有成员 */
+wangcai.wag();                 /* 正确：访问公有成员 */
 ```
 
-# 初始化
+---
 
-每个变量都对应一段内存空间，在定义变量的时候，可以对这段内存空间进行初始化。注意，初始化只有一次机会，就是在定义这个变量的时候。
+<!-- _class: lead gaia -->
+
+# 构造函数和析构函数
+
+---
+
+## 初始化
+
+每个变量都对应一段内存空间，在定义变量的时候，可以对这段内存空间进行初始化。
+
+初始化只有一次机会，就是在定义这个变量的时候。
 
 如果在定义变量的时候不进行初始化，则该变量（对应的内存空间）的值是随机的，直到第一次为该变量赋值。
+
+---
 
 ```
 int a;
@@ -245,6 +305,8 @@ a=1;
 b=2;
 cout << a << " " << b << endl;
 ```
+
+---
 
 在定义变量的时候，可以使用括号或赋值符号对变量进行初始化操作。
 
@@ -258,334 +320,247 @@ b=2;
 cout << a << " " << b << endl;
 ```
 
+---
+
 同样，如果在定义对象的时候不进行初始化，则该对象的各个成员变量（对应的内存空间）的值是随机的，直到第一次为该对象的各个成员变量赋值。
 
 ```
-student ls;
-cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+student zs;
+zs.display();
 
-ls.set_name("lisi");
-ls.number = 2;
-ls.score = 80;	
+zs.set_name("zhangsan");
+zs.number = 1;
+zs.score = 90;	
 
-cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+zs.display();
 ```
+
+---
 
 在定义对象的时候，可以使用括号或赋值符号对这个对象进行初始化。
 
-可以使用已有的对象，对新的对象进行初始化。这样的方式初始化出来的新对象，和原对象是一模一样的。
+可以使用已有的对象，对新的对象进行初始化。
+
+这样的方式初始化出来的新对象，和原对象是一模一样的。
+
+---
 
 ```
 student ls(zs);
-cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
+ls.display();
 
 student ww=zs;
-cout << ww.get_name() << " " << ww.number << " " << ww.score  << endl;
+ls.display();
 ```
 
-也可以使用自定义的“构造函数”，实现其它的初始化方法，以满足不同的初始化需求。
+---
 
-构造函数，是一种特殊的成员函数，函数名和类名完全相同，没有返回类型。可以根据需求定义多个构造函数，它们之间通过不同的参数区分（重载构造函数）。
+## 构造函数
 
-    class student
-    {
-    	... 
-    	
-    	student()
-        {
-            cout << "In student()" << endl;
-            
-            strcpy(name,"none");
-            number=0;
-            score=0;      
-        }
-        
-        student(char const * text)
-        {
-            cout << "In student(char const * text)" << endl;
-            
-            if(strlen(text)>=10) 
-    		{
-                cout << "length of " << text << " >= 10 " << endl;
-                exit(0);
-            }
-    
-            strcpy(name,text);     
-        }   
-        
-        student(char const * text, int n, int s)
-        {
-            cout << "In student(char const * text, int n, int s)" << endl;
-            
-            if(strlen(text)>=10) 
-    		{
-                cout << "length of " << text << " >= 10 " << endl;
-                exit(0);
-            }
-    
-            strcpy(name,text);     
-            number=n;
-            score=s;        
-        }
-        
-    	...
-    	
-    }
-构造函数在定义对象时调用，如果有多个构造函数，编译器根据参数的个数和类型确定选用哪一个构造函数。
+为满足不同的初始化需求，我们可以自己定义“构造函数”，实现其它的初始化方法。
+
+构造函数，是一种特殊的成员函数，函数名和类名完全相同，没有返回类型。构造函数的主要任务，是对对象进行“初始化”操作。
+
+可以根据需求定义多个构造函数，它们之间通过不同的参数区分（重载构造函数）。
+
+---
 
 ```
-student zs;
-student ls("lisi",2,80);
-student ww("wangwu");
-
-/* or */
-
-student zs={};
-student ls={"lisi",2,80};
-student ww={"wangwu"};
-
-/* or */
-student zs=student();
-student ls=student("lisi",2,80);
-student ww=student("wangwu");
-```
-
-如果不自定义任何构造函数，编译器会提供一个默认的不带任何参数的构造函数，这个构造函数不会对成员变量进行任何操作。一旦有了自定义的构造函数，这个默认的构造函数就失效了。例如，
-
-```
-student zs;
-```
-
-在自定义构造函数之前，调用的是默认的构造函数。在自定义构造函数之后，默认的构造函数就失效了，调用的是自定义的构造函数。
-
-```
-student()
-{
-    strcpy(name,"none");
-    number=0;
-    score=0;      
-}
-```
-
-另外，编译器还提供了另一个默认的构造函数，叫做“复制构造函数”或“拷贝构造函数”。该构造函数的原型如下：
-
-```
-student(student & s);
-```
-
-这个构造函数带一个参数，参数的类型是这个类的引用类型。
-
-当使用一个已有的对象，对新的对象进行初始化时，就会调用默认的“拷贝构造函数”。默认的“拷贝构造函数”会采用“位拷贝”的方式来初始化新的对象，所以初始化出来的新对象和原对象是一模一样的。
-
-```
-student ls(zs);
-cout << ls.get_name() << " " << ls.number << " " << ls.score  << endl;
-
-student ww=zs;
-cout << ww.get_name() << " " << ww.number << " " << ww.score  << endl;
-```
-
-也可以不使用默认的“拷贝构造函数”，而使用自定义的“拷贝构造函数”。
-
-```
-student(student & s)
-{
-    cout << "In student(student & s)" << endl;
-
-    strcpy(name,s.name);
-    number=s.number;
-    score=s.score;
-}
-```
-
-一旦有了自定义的“拷贝构造函数”，默认的“拷贝构造函数”就失效了。
-
-当使用上述自定义的“拷贝构造函数”时，以下代码会出现什么问题？
-
-```
-student zs=student();
-student ls=student("lisi",2,80);
-student ww=student("wangwu");
-```
-
-***回顾：左值 vs 右值***
-
-修改自定义的“拷贝构造函数”
-
-```
-student(student const & s)
-{
-    cout << "In student(student & s)" << endl;
-
-    strcpy(name,s.name);
-    number=s.number;
-    score=s.score;
-}
-```
-
-思考：默认的“拷贝构造函数”已经能够完成拷贝对象的工作了，为什么还需要自定义的“拷贝构造函数”？
-
-# 扫尾
-
-如果一个指针变量指向了一段动态分配的内存空间，在释放指针变量时，系统只会释放该指针变量本身（4字节），不会自动释放它指向的内存空间。
-
-```
-#include <iostream>
-using namespace std;
-
-void func(int i)
-{
-    char *p;
-    p=new char[1000000];
-    cout  << i << endl;
-}
-
-int main()
-{
-    for(int i=1; i<=4000; i++){
-        func(i);
-    }
-
-    cout << "OK" << endl;
-    return 0;
-}
-```
-
-同样，如果一个对象中存在指针类型的成员变量，在释放该对象时，系统只会释放指针变量本身，不会自动释放它指向的动态分配的内存空间。
-
-```
-#include <iostream>
-#include <string.h>
-using namespace std;
-
 class student
 {
-    private:
-    char name[10];
-
     public:
-    int number;
-    int score;
-    char * resume;
-
     student()
     {
         strcpy(name,"none");
         number=0;
         score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
     }
+
+```
+---
+```
 
     student(char const * text)
     {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
+        strcpy(name,text);     
+        number=0;
+        score=0;   
     }   
-        
+
     student(char const * text, int n, int s)
     {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
         strcpy(name,text);     
         number=n;
-        score=s;
-        resume=new char[1000000];   
-        strcpy(resume, "Good Boy! ......");        
+        score=s;        
     }
-
-    char const * get_name() 
-	{
-        return name;
-    }
-
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-		
-        strcpy(name,text);
-    }
-    
-    void display()
-    {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
-    }
-};
-
-void func(int i)
-{
-    student zs("zhangsan",1,90);
-    cout  << i << endl;
 }
 
-int main()
+```
+
+---
+
+构造函数在对象初始化时调用，如果有多个构造函数，编译器根据参数的个数和类型确定选用哪一个构造函数。
+
+```
+student zs;                 /* 注：不能是student zs(); */
+student ls("lisi",2,80);
+student ww("wangwu");
+```
+
+以下书写方式和上面等效。
+
+```
+student zs={};
+student ls={"lisi",2,80};
+student ww={"wangwu"};
+```
+
+---
+
+如果没有自定义的构造函数，编译器会提供一个默认的不带任何参数的构造函数，这个构造函数不会对成员变量进行任何操作。一旦有了自定义的构造函数，编译器就不会提供这个默认的构造函数了。
+
+**思考**：以下代码会出现什么问题？
+
+**constructor-1.cpp**
+
+```
+student zs;
+```
+
+---
+
+## 拷贝构造函数
+
+另外，编译器还会提供另一个默认的构造函数，叫做“拷贝构造函数”或“复制构造函数”。
+
+当使用一个已有对象对新对象进行初始化时，就会调用默认的“拷贝构造函数”。
+
+默认的“拷贝构造函数”会采用“位拷贝”的方式来初始化新对象，所以初始化出来的新对象和原对象是一模一样的。
+
+---
+
+```
+student ls(zs);
+ls.display();
+
+student ww=zs;
+ls.display();
+```
+
+---
+
+也可以自己定义“拷贝构造函数”，该函数需要：
+
+1. 带一个参数
+
+2. 参数类型是该类的引用类型
+
+```
+student(student & s)
 {
-    for(int i=1; i<=4000; i++){
-        func(i);
-    }
-    
-    cout << "OK" << endl;
-    return 0;
+    strcpy(name,s.name);
+    number=s.number;
+    score=s.score;
+}
+```
+
+一旦有了自定义的“拷贝构造函数”，编译器就不会提供默认的“拷贝构造函数”了。
+
+---
+
+**思考**
+
+默认的“拷贝构造函数”已经能够完成拷贝对象的工作了，为什么还需要自定义的“拷贝构造函数”？
+
+---
+
+一个函数中如果存在指针变量，在函数退出时，系统会自动释放指针变量的内存空间（4或8字节），但不会自动释放它指向的内存空间。
+
+**delete-1.cpp**
+
+```
+void func(int i)
+{
+    char *p;
+    p=new char[num];
+    ...
+}
+```
+
+---
+
+一个对象中如果存在指针类型的成员变量，在释放该对象时，系统会自动释放指针变量的内存空间，但不会自动释放它指向的内存空间。
+
+**delete-2.cpp**
+
+```
+void func(int i)
+{
+    student zs;
+    cout  << i << endl;
+}
+```
+
+---
+
+```
+void func(int i)
+{
+    student * zs;
+    zs = new student;
+    cout  << i << endl;
+    delete zs;
 }
 ```
 
 所以，需要在释放对象的时候执行一些“扫尾”工作，以释放动态分配的内存空间。这个“扫尾”工作就是由“析构函数”完成的。
 
+---
+
+## 析构函数
+
 析构函数也是一种特殊的成员函数，函数名是在类名前面加一个~号，没有返回类型，也没有参数。析构函数不能重载，每个类只有一个析构函数。析构函数在释放对象时调用，可用于释放动态申请的内存空间或其它“扫尾”工作。
 
-```
-class student
-{
-	...
-	
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-	...
+**delete-3.cpp**
 
+```
+~student()
+{
+    delete[] resume;
 }
 ```
 
-不同的对象在释放的时候，都会调用自己的析构函数。
+---
+
+每个对象在释放的时候，都会调用自己的析构函数。
 
 ```
 void func(int i)
 {
-    student zs("zhangsan",1,90);
-    student ls("lisi",2,80);
+    student zs;
+    student ls;
     cout  << i << endl;
 }
 ```
 
+---
+
 思考：以下代码会出现什么问题？
+
+**delete-4.cpp**
 
 ```
 void func(int i)
 {
-    student zs("zhangsan",1,90);
+    student zs;
     student ls(zs);
     cout  << i << endl;
 }
 ```
 
-***补充：浅拷贝 vs 深拷贝***
+---
+
+**浅拷贝 vs 深拷贝**
 
 普通变量的拷贝：
 
@@ -599,6 +574,8 @@ b=a;
 cout << b << endl;
 ```
 
+---
+
 指针的拷贝：
 
 ```
@@ -606,18 +583,22 @@ char *p1;
 p1=new char[1000000];
 strcpy(p1,"hello");
 cout << p1 << endl;
+```
 
+```
 char *p2;
 p2=p1;
 cout << p2 << endl; 
+```
 
-/* or */
-
+```
 char *p2;
 p2=new char[1000000];
 strcpy(p2,p1);
 cout << p2 << endl; 
 ```
+
+---
 
 两者都实现了指针的拷贝，但前者是拷贝指针本身的值，并没有拷贝指针指向的内容（浅拷贝）；后者是拷贝指针指向的内容（深拷贝）。对浅拷贝来说，对一个指针指向的内容的进行操作，会对另一个指针产生影响；对深拷贝来说，对一个指针指向的内容进行操作，不会对另一个指针造成影响。
 
@@ -626,7 +607,9 @@ strcpy(p1,"world");
 cout << p2 << endl;   
 ```
 
-更大的影响，可能出现在释放内存的时候。
+---
+
+在释放内存时，浅拷贝可能造成更大的影响。
 
 ```
 delete[] p1;
@@ -634,155 +617,137 @@ delete[] p2;
 cout << "OK" << endl;
 ```
 
-当使用一个已有的对象，对新的对象进行初始化时，默认的“拷贝构造函数”会采用“位拷贝”的方式来初始化新的对象。如果成员变量中有指针类型的变量，默认的“拷贝构造函数”只能达到“浅拷贝”的效果。如果需要达到“深拷贝”的效果，就需要使用自定义的“拷贝构造函数”，并确保真正执行了“深拷贝”。
+---
+
+默认的“拷贝构造函数”采用“位拷贝”的方式来初始化新的对象，如果成员变量中有指针类型的变量，则只能达到“浅拷贝”的效果。
+
+如要达到“深拷贝”的效果，就必须自己定义“拷贝构造函数”。
+
+**delete-5.cpp**
 
 ```
-student(student const & s)
+student(student & s)
 {
     strcpy(name,s.name);
     number=s.number;
     score=s.score;
-    
-    /* error */
-    resume=s.resume; 
-
-    /* correct */
-    resume=new char[1000000];
-    strcpy(resume,s.resume);     
+    resume=new char[num]();
+    strcpy(resume,s.resume);
 }
 ```
 
-完整的代码如下。
+---
+
+## 临时对象
+
+一般情况下，构造函数是在定义一个对象时，由系统自动调用的。
+
+特殊情况下，也可以直接调用构造函数。
+
+直接调用构造函数，会生成一个临时对象。
+
+临时对象的生存期是由系统自动控制的，不同的编译器可能有不同的处理方式，通常情况下都会把临时对象作为一个“右值”看待。
+
+---
+
+**取地址**
 
 ```
-#include <iostream>
-#include <string.h>
-using namespace std;
+int a=1;
+int * p = &(a+2);
+```
 
-class student
-{
-    private:
-    char name[10];
+```
+class student() {...};
+student * p = &(student());
+```
 
-    public:
-    int number;
-    int score;
-    char * resume;
+**引用的初始化**
 
-    student()
-    {
-        strcpy(name,"none");
-        number=0;
-        score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }
+```
+int & r = a+2;
+```
 
-    student(student const & s)
-    {
-        strcpy(name,s.name);
-        number=s.number;
-        score=s.score;
-        resume=new char[1000000];
-        strcpy(resume,s.resume);     
-    }
-    
-    student(char const * text)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
+```
+student & r = student();
+```
 
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }   
-        
-    student(char const * text, int n, int s)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
+**参数传递**
 
-        strcpy(name,text);     
-        number=n;
-        score=s;
-        resume=new char[1000000];   
-        strcpy(resume, "Good Boy! ......");        
-    }
-
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-    char const * get_name() 
-	{
-        return name;
-    }
-
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-		
-        strcpy(name,text);
-    }
-    
-    void display()
-    {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
-    }
-};
-
-void func(int i)
-{
-    student zs("zhangsan",1,90);
-    student ls(zs);
-    cout  << i << endl;
-}
-
+```
+void func(int & x) { ... }
 int main()
 {
-    for(int i=1; i<=4000; i++){
-        func(i);
-    }
-    
-    cout << "OK" << endl;
+    int a=1;
+    func(a+2);
     return 0;
 }
 ```
 
-# 数组
+```
+void func(student & x) { ... }
+int main()
+{
+    func(student());
+    return 0;
+}
+```
 
-数组的定义
+---
+
+**思考**
+以下代码会出现什么问题？
+
+**temporary-1.cpp**
 
 ```
-/* 普通数组 */
-int a[3];
+student zs=student();
+zs.display();
 
-/* 对象数组 */
+student ls=student("lisi");
+ls.display();
+
+student ww=student("wangwu,3,80");
+ww.display();
+```
+
+---
+
+# 数组
+
+## 数组的定义
+
+普通数组
+
+```
+int a[3];
+```
+
+对象数组
+
+```
 student stu[3];
 ```
 
-数组的使用
+---
+
+## 数组的使用
+
+普通数组
 
 ```
-/* 普通数组 */
 a[0]=0;
 for(int i=0; i<3; i++)
 {
 	cout << a[i] << endl;
 }
+```
 
-/* 对象数组 */
+---
+
+对象数组
+
+```
 stu[0].set_name("zhangsan");
 stu[0].number = 1;
 stu[0].score = 90;	
@@ -794,24 +759,35 @@ for(int i=0; i<3; i++)
 
 ```
 
-数组的初始化
+---
+
+## 数组的初始化
+
+普通数组
 
 ```
-/* 普通数组 */
 int a[3] = { 0, 1, 2 };
 for(int i=0; i<3; i++)
 {
 	cout << a[i] << endl;
 }
+```
 
-/* 对象数组 */
+---
+
+对象数组
+
+```
 student stu[3] = { {}, {"lisi",2,80}, {"wangwu"} };
 for(int i=0; i<3; i++)
 {
 	stu[i].display();
 }
+```
 
-/* or */
+或者
+
+```
 student stu[3] = { student(), student("lisi",2,80), student("wangwu") };
 for(int i=0; i<3; i++)
 {
@@ -819,50 +795,75 @@ for(int i=0; i<3; i++)
 }
 ```
 
+---
+
 # 指针
 
-指针的定义
+## 指针的定义
+
+普通指针
 
 ```
-/* 普通指针 */
 int *ip;
+```
 
-/* 对象指针 */
+对象指针
+
+```
 student *sp;
 ```
 
-指针的使用
+---
+
+## 指针的使用
+
+普通指针
 
 ```
-/* 普通指针 */
 int i(100);
 ip = &i;
 cout << *ip << endl;
+```
 
-/* 对象指针 */
+对象指针
+
+```
 student zs("zhangsan",1,90);
 sp = &zs;
-sp->display(); // (*sp).display(); 
+sp->display(); 
+(*sp).display(); 
 ```
 
-指向动态分配的内存
+---
+
+## 指向动态分配的内存
+
+普通指针
 
 ```
-/* 普通指针 */
 ip = new int(200);
 cout << *ip << endl;
 delete ip;
+```
 
-/* 对象指针 */
+对象指针
+
+```
 sp = new student("lisi",2,80);
-sp->display(); // (*sp).display();
+sp->display(); 
+(*sp).display();
 delete sp;
 ```
 
-指向数组元素，以指针的形式访问
+---
+
+## 指向数组元素
+
+**以指针的形式访问**
+
+普通指针
 
 ```
-/* 普通指针 */
 int ia[3]={ 1, 2, 3 }; 
 ip=ia;
 for(int i=0; i<3; i++)
@@ -871,8 +872,13 @@ for(int i=0; i<3; i++)
     ip++; // ip = ip + 1;
 }
 cout << *(ip-3) << endl;
+```
 
-/* 对象指针 */
+---
+
+对象指针
+
+```
 student stu[3] = { {"zhangsan",1,90 }, {"lisi",2,80}, {"wangwu",3,70} };
 sp = stu;
 for(int i=0; i<3; i++)
@@ -883,7 +889,11 @@ for(int i=0; i<3; i++)
 (sp-3)->display();
 ```
 
-指向数组元素，以数组的形式访问
+---
+
+**以数组的形式访问**
+
+普通指针
 
 ```
 int ia[3]={ 1, 2, 3 }; 
@@ -892,7 +902,13 @@ for(int i=0; i<3; i++)
 {
     cout << ip[i] << endl;
 }
+```
 
+---
+
+对象指针
+
+```
 student stu[3] = { {"zhangsan",1,90 }, {"lisi",2,80}, {"wangwu",3,70} };
 sp = stu;
 for(int i=0; i<3; i++)
@@ -900,6 +916,10 @@ for(int i=0; i<3; i++)
     sp[i].display();
 }
 ```
+
+---
+
+## this指针
 
 上述实例，都是从一个对象的外部，通过指针访问该对象。
 
@@ -910,140 +930,26 @@ for(int i=0; i<3; i++)
 ```
 student(char const * text, int n, int s)
 {
-    if(strlen(text)>=10) 
-    {
-        cout << "length of " << text << " >= 10 " << endl;
-        exit(0);
-    }
-
     strcpy(this->name,text);     
     this->number=n;
     this->score=s;
-    this->resume=new char[1000000];   
-    strcpy(this->resume, "Good Boy! ......");        
 }
 ```
+
+---
 
 默认情况下，编译器会自动补充this指针（定义参数和访问对象成员的时候），所以一般不需要明确的写出来。但是，在有的情况下，需要把this指针明确的写出来。
 
 ```
 student(char const * name, int number, int score)
 {
-    if(strlen(name)>=10) 
-    {
-        cout << "length of " << name << " >= 10 " << endl;
-        exit(0);
-    }
-
     strcpy(this->name,name);     
     this->number=number;
     this->score=score;
-    this->resume=new char[1000000];   
-    strcpy(this->resume, "Good Boy! ......");        
 }
 ```
 
-完整的代码如下。
-
-```
-#include <iostream>
-#include <string.h>
-using namespace std;
-
-class student
-{
-    private:
-    char name[10];
-
-    public:
-    int number;
-    int score;
-    char * resume;
-
-    student()
-    {
-        strcpy(name,"none");
-        number=0;
-        score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }
-
-    student(student const & s)
-    {
-        strcpy(name,s.name);
-        number=s.number;
-        score=s.score;
-        resume=new char[1000000];
-        strcpy(resume,s.resume);     
-    }
-    
-    student(char const * text)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }   
-        
-    student(char const * name, int number, int score)
-    {
-        if(strlen(name)>=10) 
-        {
-            cout << "length of " << name << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(this->name,name);     
-        this->number=number;
-        this->score=score;
-        this->resume=new char[1000000];   
-        strcpy(this->resume, "Good Boy! ......");        
-    }
-
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-    char const * get_name() 
-	{
-        return name;
-    }
-
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-		
-        strcpy(name,text);
-    }
-    
-    void display()
-    {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
-    }
-};
-
-int main()
-{
-    student zs("zhangsan",1,90);
-    zs.display();
-
-    student ls("lisi");
-    ls.display();
-    
-    return 0;
-}
-```
+---
 
 通过调试器可观察到编译器自动补充的this指针。
 
@@ -1058,6 +964,8 @@ int main()
     text=0x404063 <std::piecewise_construct+31> "lisi") at test.cpp:35
 #1  0x00401616 in main () at test.cpp:93
 ```
+
+---
 
 # 参数传递
 
@@ -1082,6 +990,10 @@ void swap_number(student s1, student s2)
     s2.number = tmp;
 }
 
+```
+---
+```
+
 int main()
 {
     student zs("zhangsan",1,90);
@@ -1096,6 +1008,8 @@ int main()
     return 0;
 }
 ```
+
+---
 
 指针变量作为参数
 
@@ -1118,6 +1032,10 @@ void swap_number(student * s1, student  * s2)
     s2->number = tmp;
 }
 
+```
+---
+```
+
 int main()
 {
     student zs("zhangsan",1,90);
@@ -1132,6 +1050,8 @@ int main()
     return 0;
 }
 ```
+
+---
 
 引用作为参数
 
@@ -1154,6 +1074,10 @@ void swap_number(student & s1, student  & s2)
     s2.number = tmp;
 }
 
+```
+---
+```
+
 int main()
 {
     student zs("zhangsan",1,90);
@@ -1169,6 +1093,8 @@ int main()
 }
 ```
 
+---
+
 # 友元
 
 可从两个方面来理解封装：
@@ -1181,6 +1107,8 @@ int main()
 友元打破了类的权限规则。为一个类设置友元后，该类的所有成员对该友元都是可见的。友元机制提高了方便性，但降低了安全性。
 
 有两种类型的友元：友元函数、友元类。
+
+---
 
 ## 友元函数
 
@@ -1196,6 +1124,10 @@ void display_name(student s)
     cout << s.name << endl;
 }
 
+```
+---
+```
+
 int main()
 {
     student zs("zhangsan",1,90);
@@ -1203,6 +1135,8 @@ int main()
     return 0;
 }
 ```
+
+---
 
 ## 友元类
 
@@ -1215,7 +1149,6 @@ class student
 
 class teacher
 {
-    public:
     void check(student s)
     {
         cout << s.name << endl;
@@ -1223,6 +1156,9 @@ class teacher
         cout << s.score << endl;
     }
 };
+```
+---
+```
 
 int main()
 {
@@ -1232,6 +1168,8 @@ int main()
     return 0;
 }
 ```
+
+---
 
 # 类的组合
 
@@ -1244,6 +1182,8 @@ int main()
 在使用类的组合时，要特别注意一个对象和它包含的对象的初始化问题。
 
 一个对象的构造函数中可以定义一个成员初始化列表，在该列表中，可以对该对象的成员（包括对象成员）进行初始化。
+
+---
 
 ```
 #include <iostream>
@@ -1267,6 +1207,10 @@ class point
     
 };
 
+```
+---
+```
+
 class circle
 {
     public:
@@ -1283,6 +1227,10 @@ class circle
     }    
 };
 
+```
+---
+```
+
 int main()
 {
     circle c(50,60,20);
@@ -1294,6 +1242,8 @@ int main()
 }
 ```
 
+---
+
 构造函数的调用顺序：先成员，后自己。
 
 析构函数的调用顺序：先自己，后成员。
@@ -1302,37 +1252,39 @@ int main()
 
 情况很复杂，方法很简单：
 
+---
+
 ```
-...
 point()
 {
     cout << "point" << endl;
 }
-...
+
 ~point()
 {
     cout << "~point" << endl;
 }  
-...
+
 circle() 
 {
     cout << "circle" << endl;
 }
-...
+
 ~circle()
 {
     cout << "~circle" << endl;
 }    
-...
 ```
 
-# 常对象和常成员
+---
 
-***特别注意：初始化 ≠ 修改***
+# 常对象和常成员
 
 ## 常对象
 
 常量：初始化之后，就不能再修改的变量。
+
+**特别注意：初始化 ≠ 修改**
 
 ```
 int a=1;
@@ -1341,6 +1293,8 @@ a=2;
 int const b=1;
 b=2;  // error
 ```
+
+---
 
 常对象：初始化之后，就不能再修改的对象。
 
@@ -1351,6 +1305,8 @@ zs.score=100;
 student const ls("lisi");
 ls.score=100;  // error
 ```
+
+---
 
 对于成员函数，是否会修改对象？
 
@@ -1366,6 +1322,8 @@ ls.display();  // ???
 
 除非明确指出：本成员函数不会修改对象——常成员函数。
 
+---
+
 ## 常成员函数
 
 把函数声明为常成员函数。
@@ -1377,7 +1335,9 @@ void display() const
 }
 ```
 
-作弊会被检查出来。
+---
+
+作弊会被抓到！
 
 ```
 void display() const
@@ -1387,6 +1347,8 @@ void display() const
 }
 ```
 
+---
+
 ## 常成员变量
 
 学号是一个学生入学就确定了的（初始化），以后不能再修改。
@@ -1395,123 +1357,29 @@ void display() const
 int const number;
 ```
 
-会出什么问题？
+**思考**
 
-```
-#include <iostream>
-#include <string.h>
-using namespace std;
+以下代码会出什么问题？
 
-class student
-{
-    private:
-    char name[10];
-
-    public:
-    int const number;
-    int score;
-    char * resume;
-
-    student():number(0)
-    {
-        strcpy(name,"none");
-        // number=0;
-        score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }
-
-    student(student const & s):number(s.number)
-    {
-        strcpy(name,s.name);
-        // number=s.number;
-        score=s.score;
-        resume=new char[1000000];
-        strcpy(resume,s.resume);     
-    }
-    
-    student(char const * text):number(0)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }   
-        
-    student(char const * name, int number, int score):number(number)
-    {
-        if(strlen(name)>=10) 
-        {
-            cout << "length of " << name << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(this->name,name);     
-        // this->number=number;
-        this->score=score;
-        this->resume=new char[1000000];   
-        strcpy(this->resume, "Good Boy! ......");        
-    }
-
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-    char const * get_name() 
-	{
-        return name;
-    }
-
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-		
-        strcpy(name,text);
-    }
-    
-    void display() const
-    {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
-    }
-};
-
-int main()
-{
-    student zs("zhangsan",1,90);
-    // zs.number=2;
-    zs.display();
-
-    student const ls("lisi");
-    // ls.number=2;
-    ls.display();
-
-    return 0;
-}
-```
+**const-member-1.cpp**
 
 常成员变量必须初始化，且只能在构造函数的成员初始化列表中进行初始化。
 
 合理使用常对象和常成员，能够增强程序的安全性和可控性。
 
+---
+
 # 静态成员
 
 ## 静态成员变量
 
-所有对象共享的数据，可设为静态变量。静态变量只有一份副本，所以，静态变量属于“类”，而称非静态变量属于“对象”。
+所有对象共享的数据，可设为静态变量。静态变量只有一份副本，所以，静态变量属于“类”，而非静态变量属于“对象”。
 
 对于静态成员变量，类的内部只是“申明”，类的外部才是“定义”。
 
 在定义静态成员变量时，可以进行初始化。
+
+---
 
 ```
 class student
@@ -1523,6 +1391,8 @@ class student
 }
 
 char student::school[10] = "UESTC";
+
+---
 
 int main()
 {
@@ -1539,7 +1409,9 @@ int main()
 
 ```
 
-通过调试器可观察到静态成员变量的地址。
+---
+
+通过调试器观察静态成员变量的地址。
 
 ```
 (gdb) p &student::school
@@ -1556,6 +1428,8 @@ $6 = (student *) 0x61fe90
 $7 = 24
 ```
 
+---
+
 所以，静态成员变量不属于“对象”，而属于“类”。没有对象，也可以访问静态成员变量。访问的方式是通过“类”。
 
 ```
@@ -1567,114 +1441,15 @@ int main()
 }
 ```
 
+---
+
 ## 静态成员函数
+
+静态成员函数是没有this指针的成员函数。
 
 编译器不会为静态成员函数自动补充this指针。
 
-```
-#include <iostream>
-#include <string.h>
-using namespace std;
-
-class student
-{
-    private:
-    char name[10];
-
-    public:
-    int number;
-    int score;
-    char * resume;
-    static char school[10];
-    
-    student()
-    {
-        strcpy(name,"none");
-        number=0;
-        score=0;      
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }
-
-    student(student const & s)
-    {
-        strcpy(name,s.name);
-        number=s.number;
-        score=s.score;
-        resume=new char[1000000];
-        strcpy(resume,s.resume);     
-    }
-    
-    student(char const * text)
-    {
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(name,text); 
-        resume=new char[1000000];
-        strcpy(resume, "Good Boy! ......"); 
-    }   
-        
-    student(char const * name, int number, int score)
-    {
-        if(strlen(name)>=10) 
-        {
-            cout << "length of " << name << " >= 10 " << endl;
-            exit(0);
-        }
-
-        strcpy(this->name,name);     
-        this->number=number;
-        this->score=score;
-        this->resume=new char[1000000];   
-        strcpy(this->resume, "Good Boy! ......");        
-    }
-
-    ~student()
-    {
-        delete[] resume;
-    }
-    
-    char const * get_name() 
-	{
-        return name;
-    }
-
-    void set_name(char const * text) 
-	{
-        if(strlen(text)>=10) 
-		{
-            cout << "length of " << text << " >= 10 " << endl;
-            exit(0);
-        }
-		
-        strcpy(name,text);
-    }
-    
-    void display()
-    {
-        cout << name << " " << number << " " << score << " " <<  resume << endl;
-    }
-    
-    static void set_school(char const * text)
-    {
-        strcpy(school, text);
-        // score = 100; 
-    }
-};
-
-char student::school[10] = "UESTC";
-
-int main()
-{
-    student::set_school("uestc");
-    cout << student::school << endl;
-    return 0;
-}
-```
+**static-member.cpp**
 
 通过调试器检查编译器是否为静态成员函数补充this指针。
 
@@ -1684,6 +1459,8 @@ int main()
     text=0x404045 <std::piecewise_construct+1> "uestc") at test.cpp:90
 #1  0x004015e2 in main () at test.cpp:98
 ```
+
+---
 
 所以，在不指定对象的情况下，静态成员函数是无法访问对象的普通成员变量的。但是，在不指定对象的情况下，静态成员函数仍然可以访问静态成员变量，因为静态成员变量属于“类”，而不属于“对象”。
 
@@ -1697,6 +1474,8 @@ static void set_school(char const * text)
     cout << score << endl; // error
 }
 ```
+
+---
 
 如果希望用静态成员函数访问普通成员变量，必须指定明确的对象。
 
@@ -1713,6 +1492,8 @@ static void set_school(char const * text)
 }
 ```
 
+---
+
 ## 静态成员的应用
 
 单件模式：一种常见的设计模式。
@@ -1720,52 +1501,17 @@ static void set_school(char const * text)
 一般情况下，一个类可以有多个实例（对象）
 
 ```
-#include <iostream>
-#include <string.h>
-using namespace std;
+student zs("zhangsan", 1, 90);
+zs.display();
 
-class student
-{
-    private:
-    char name[10];
-    int number;
-    int score;    
-    
-    public:
-    student(char const * name, int number, int score)
-    {
-        if(strlen(name)>=10) 
-        {
-            cout << "length of " << name << " >= 10 " << endl;
-            exit(0);
-        }
+student ls("lisi", 2, 80);
+ls.display();
 
-        strcpy(this->name,name);     
-        this->number=number;
-        this->score=score;
-    }
-   
-    void display()
-    {
-        cout << name << " " << number << " " << score << endl;
-    }
-    
-};
-
-int main()
-{
-    student zs("zhangsan", 1, 90);
-    zs.display();
-
-    student ls("lisi", 2, 80);
-    ls.display();
-
-    student ww("wangwu ", 3, 70);
-    ww.display();
-    
-    return 0;
-}
+student ww("wangwu ", 3, 70);
+ww.display();
 ```
+
+---
 
 在某些应用场景中，一个类最多只允许一个实例，如何实现？
 
@@ -1775,7 +1521,9 @@ int main()
 
 类外调用：使用者调用，不可控。
 
-类内调用：设计者调用，可控。
+类内调用：实现者调用，可控。
+
+---
 
 只允许调用一次，所以不能从类外调用 —— 隐藏构造函数。
 
@@ -1789,8 +1537,9 @@ class student
 ```
 
 隐藏构造函数后，不能从类外调用构造函数。
-
 只能从类内（成员函数中）调用构造函数。
+
+---
 
 ```
 class student
@@ -1804,73 +1553,37 @@ class student
 ```
 
 问题1：调用student()前，对象是否存在？
-
 问题2：new_student()属于类 or 对象？
-
 问题3：new_student()应该公开 or 隐藏？
-
 问题4：如何控制student()最多只调用一次？
+
+---
 
 完整的代码如下。
 
+**student-vip.cpp**
+
 ```
-#include <iostream>
-#include <string.h>
-using namespace std;
+student *zs = student::new_student("zhangsan", 1, 90);
+zs->display();
 
-class student
-{
-    private:
-    student(char const * name, int number, int score)
-    {
-        if(strlen(name)>=10) 
-        {
-            cout << "length of " << name << " >= 10 " << endl;
-            exit(0);
-        }
+student *ls = student::new_student("lisi", 2, 80);
+ls->display();
 
-        strcpy(this->name,name);     
-        this->number=number;
-        this->score=score;
-    }
-    char name[10];
-    int number;
-    int score;
-    static student * vip;    
-
-    public:
-    static student * new_student(char const * name, int number, int score)
-    {
-        if(vip==NULL) 
-            vip=new student(name, number, score);
-        else
-            cout << "sorry, only one vip" << endl;
-        return vip;   
-    }
-    
-    void display()
-    {
-        cout << name << " " << number << " " << score << endl;
-    }
-    
-};
-
-student * student::vip = NULL;
-
-int main()
-{
-    student *zs = student::new_student("zhangsan", 1, 90);
-    zs->display();
-
-    student *ls = student::new_student("lisi", 2, 80);
-    ls->display();
-    
-    student *ww = student::new_student("wangwu ", 3, 70);
-    ww->display();
-    
-    return 0;
-}
+student *ww = student::new_student("wangwu ", 3, 70);
+ww->display();
 ```
 
+# 课后复习
 
+---
 
+**课程MOOC**
+www.icourse163.org/course/UESTC-1001774006?tid=1465243448
+第八章 类与对象
+
+**码图作业**
+matu.uestc.edu.cn
+班级：C++程序设计（2021）
+第8章 作业1
+第8章 作业2

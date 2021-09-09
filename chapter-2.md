@@ -64,10 +64,9 @@ theme: gaia
 
 C语言的结构（struct）已经具备一定程度的信息组合的功能。
 
+**setname-1.c**
+
 ```
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 struct student
 {
@@ -120,6 +119,8 @@ zs.score = 95;
 
 定义和使用安全的函数：set_name、set_number、set_score ...
 
+**setname-2.c**
+
 ```
 void set_name(struct student * stu, char const * text) 
 {
@@ -131,9 +132,8 @@ void set_name(struct student * stu, char const * text)
 
     strcpy(stu->name,text);
 }
-```
+...
 
-```
 set_name(&zs, "zhangsan");
 ```
 
@@ -169,6 +169,8 @@ C++的类（class）解决了这两个问题。
 
 C++的类（class），把需要公开的部分和需要隐藏的部分区分开来，分别通过public和private说明。
 
+**setname-3.cpp**
+
 ```
 class student
 {
@@ -178,7 +180,6 @@ class student
     public:
     int number;
     int score;
-
 ```
 ---
 ```
@@ -213,7 +214,9 @@ int main()
 
 ---
 
-name被隐藏起来，不能直接访问，只能通过get_name和display间接访问。（也可以用同样的方法把number和score隐藏起来）
+name被隐藏起来，不能直接访问，只能通过get_name等函数间接访问。
+
+也可以用同样的方法把number和score隐藏起来。
 
 无论是变量还是函数，只要放到private区，都会被“隐藏”，类的实现者，即class内部的代码，可以访问；类的使用者，即class外部的代码，不能访问。
 
@@ -239,7 +242,13 @@ https://blog.csdn.net/weixin_39640298/article/details/84349171
 
 ## 对象
 
-类（class）是特殊的数据类型，和其它数据类型（如：int、float、struct、……）一样，类（class）可以用来定义变量（variable）。使用一个数据类型来定义变量，称为对该数据类型的实例化。定义出来的每一个变量，都称为该数据类型的一个实例（instance）。我们用一个特殊的术语来称呼类（class）的实例，这个术语就是——对象（object）。
+类（class）是特殊的数据类型，和其它数据类型一样，类可以用来定义变量（variable）。
+
+用数据类型来定义变量，称为该数据类型的实例化。定义出来的变量，称为该数据类型的实例（instance）。
+
+类（class）的实例有一个特殊的名称——对象（object）。
+
+---
 
 ```
 int a,b,c;
@@ -260,6 +269,8 @@ student zs,ls,ww;
 例如：旺财是一只狗，狗这种类型都拥有尾巴这个属性，并且能够执行摇尾巴这个动作，所以，狗是一个类，旺财是一个对象。
 
 ---
+
+**dog.cpp**
 
 ```
 class dog {
@@ -338,12 +349,8 @@ zs.display();
 ---
 
 在定义对象的时候，可以使用括号或赋值符号对这个对象进行初始化。
-
 可以使用已有的对象，对新的对象进行初始化。
-
 这样的方式初始化出来的新对象，和原对象是一模一样的。
-
----
 
 ```
 student ls(zs);
@@ -450,10 +457,9 @@ ls.display();
 ---
 
 也可以自己定义“拷贝构造函数”，该函数需要：
-
 1. 带一个参数
-
 2. 参数类型是该类的引用类型
+一旦有了自定义的“拷贝构造函数”，编译器就不会提供默认的“拷贝构造函数”了。
 
 ```
 student(student & s)
@@ -463,8 +469,6 @@ student(student & s)
     score=s.score;
 }
 ```
-
-一旦有了自定义的“拷贝构造函数”，编译器就不会提供默认的“拷贝构造函数”了。
 
 ---
 
@@ -662,6 +666,8 @@ class student() {...};
 student * p = &(student());
 ```
 
+---
+
 **引用的初始化**
 
 ```
@@ -671,6 +677,8 @@ int & r = a+2;
 ```
 student & r = student();
 ```
+
+---
 
 **参数传递**
 
@@ -713,7 +721,11 @@ ww.display();
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 数组
+
+---
 
 ## 数组的定义
 
@@ -797,7 +809,11 @@ for(int i=0; i<3; i++)
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 指针
+
+---
 
 ## 指针的定义
 
@@ -967,12 +983,17 @@ student(char const * name, int number, int score)
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 参数传递
 
-普通变量作为参数
+---
+
+## 普通参数
+
+整型变量
 
 ```
-// 整型变量
 void swap(int x, int y)
 {
     int tmp;
@@ -981,7 +1002,13 @@ void swap(int x, int y)
     y=tmp;
 }
 
-// 对象
+```
+
+---
+
+对象
+
+```
 void swap_number(student s1, student s2)
 {
     int tmp;
@@ -1011,10 +1038,11 @@ int main()
 
 ---
 
-指针变量作为参数
+## 指针参数
+
+整型指针
 
 ```
-// 整型指针
 void swap(int * x, int * y)
 {
     int tmp;
@@ -1023,7 +1051,12 @@ void swap(int * x, int * y)
     *y=tmp;
 }
 
-// 对象指针
+```
+---
+
+对象指针
+
+```
 void swap_number(student * s1, student  * s2)
 {
     int tmp;
@@ -1053,10 +1086,11 @@ int main()
 
 ---
 
-引用作为参数
+## 引用参数
+
+整型引用
 
 ```
-// 整型引用
 void swap(int & x, int & y)
 {
     int tmp;
@@ -1065,7 +1099,12 @@ void swap(int & x, int & y)
     y=tmp;
 }
 
-// 对象引用
+```
+---
+
+对象引用
+
+```
 void swap_number(student & s1, student  & s2)
 {
     int tmp;
@@ -1095,18 +1134,21 @@ int main()
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 友元
 
-可从两个方面来理解封装：
+---
 
-1. 组合
-2. 隐藏
+封装实现了：1、组合；2、隐藏
 
-安全性 vs 方便性
+解决了：安全性问题
+
+但是：安全性 vs 方便性，权衡 ？
 
 友元打破了类的权限规则。为一个类设置友元后，该类的所有成员对该友元都是可见的。友元机制提高了方便性，但降低了安全性。
 
-有两种类型的友元：友元函数、友元类。
+有两种类型的友元：1、友元函数；2、友元类。
 
 ---
 
@@ -1171,7 +1213,11 @@ int main()
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 类的组合
+
+---
 
 一个类的成员变量，可以是普通的数据类型，也可以是类类型。
 
@@ -1199,18 +1245,14 @@ class point
         this->x = x;
         this->y = y;
     }
-    
     // or
     point(float x, float y):x(x),y(y)
     {
     }    
-    
 };
-
 ```
 ---
 ```
-
 class circle
 {
     public:
@@ -1220,13 +1262,11 @@ class circle
     {
         radius = r;
     }
-    
     // or
     circle(float x, float y, float r) : center(x,y),radius(r)
     {
     }    
 };
-
 ```
 ---
 ```
@@ -1278,7 +1318,11 @@ circle()
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 常对象和常成员
+
+---
 
 ## 常对象
 
@@ -1357,19 +1401,19 @@ void display() const
 int const number;
 ```
 
-**思考**
-
-以下代码会出什么问题？
+**思考：** 以下代码会出什么问题？
 
 **const-member-1.cpp**
 
-常成员变量必须初始化，且只能在构造函数的成员初始化列表中进行初始化。
-
-合理使用常对象和常成员，能够增强程序的安全性和可控性。
+常成员变量必须初始化，且只能在构造函数的成员初始化列表中进行初始化。合理使用常对象和常成员，能够增强程序的安全性和可控性。
 
 ---
 
+<!-- _class: lead gaia -->
+
 # 静态成员
+
+---
 
 ## 静态成员变量
 
@@ -1392,7 +1436,9 @@ class student
 
 char student::school[10] = "UESTC";
 
+```
 ---
+```
 
 int main()
 {
@@ -1573,6 +1619,10 @@ ls->display();
 student *ww = student::new_student("wangwu ", 3, 70);
 ww->display();
 ```
+
+---
+
+<!-- _class: lead gaia -->
 
 # 课后复习
 

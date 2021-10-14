@@ -113,7 +113,7 @@ cout << b.name;
 
 是否能访问成功，取决于两点：
 
-1. 基类成员的访问控制属性（public、protected、private）
+1. 基类成员（public、protected、private）
 
 ```
 public:
@@ -132,7 +132,7 @@ char name[8];
 
 ---
 
-2. 派生类的继承方式（public、protected、private）
+2. 继承方式（public、protected、private）
 
 ```
 class dog : public animal { ... }
